@@ -1,0 +1,44 @@
+[
+  {
+    "id": "table", "name": "Стол", "aliases": ["столы", "письменный стол", "рабочий стол"],
+    "attributes": { "width_cm": { "name": "Ширина", "type": "integer", "unit": "см", "aliases": ["ширина", "широкий", "узкий"], "minimum": 1 } }
+  },
+  {
+    "id": "chair", "name": "Кресло", "aliases": ["кресла", "стул", "стулья"],
+    "attributes": { "adjustable_height": { "name": "Регулировка высоты", "type": "boolean", "aliases": ["регулировка высоты", "регулируемое", "подъёмное"] } }
+  },
+  {
+    "id": "lamp", "name": "Лампа", "aliases": ["лампы", "светильник", "настольная лампа"],
+    "attributes": { "color_temperature_k": { "name": "Цветовая температура", "type": "integer", "unit": "К", "aliases": ["цветовая температура", "температура света"], "minimum": 1 } }
+  },
+  {
+    "id": "sofa", "name": "Диван", "aliases": ["диваны", "софа", "кушетка"],
+    "attributes": {
+      "width_cm": { "name": "Ширина", "type": "integer", "unit": "см", "aliases": ["ширина", "широкий", "узкий"], "minimum": 1 },
+      "seats": { "name": "Количество мест", "type": "integer", "unit": "места", "aliases": ["мест", "посадочных мест"], "minimum": 1 },
+      "sleeping_function": { "name": "Раскладывается", "type": "boolean", "aliases": ["раскладной", "раскладывается", "спальное место"] }
+    }
+  },
+  {
+    "id": "bed", "name": "Кровать", "aliases": ["кровати", "спальное место"],
+    "attributes": {
+      "width_cm": { "name": "Ширина", "type": "integer", "unit": "см", "aliases": ["ширина", "односпальная", "двуспальная"], "minimum": 1 },
+      "has_storage": { "name": "Место для хранения", "type": "boolean", "aliases": ["ящики", "подъёмный механизм", "хранение"] }
+    }
+  },
+  {
+    "id": "wardrobe", "name": "Шкаф", "aliases": ["шкафы", "гардероб", "гардеробный шкаф"],
+    "attributes": {
+      "width_cm": { "name": "Ширина", "type": "integer", "unit": "см", "aliases": ["ширина"], "minimum": 1 },
+      "height_cm": { "name": "Высота", "type": "integer", "unit": "см", "aliases": ["высота"], "minimum": 1 },
+      "door_count": { "name": "Количество дверей", "type": "integer", "unit": "двери", "aliases": ["дверей", "створок"], "minimum": 1 }
+    }
+  },
+  {
+    "id": "refrigerator", "name": "Холодильник", "aliases": ["холодильники", "холодильная камера"],
+    "attributes": {
+      "volume_l": { "name": "Объём", "type": "integer", "unit": "л", "aliases": ["объём", "литров"], "minimum": 1 },
+      "no_frost": { "name": "Система No Frost", "type": "boolean", "aliases": ["ноу фрост", "no frost", "без инея"] }
+    }
+  }
+]
