@@ -60,13 +60,52 @@ def parse_request_with_regex(messages: list[dict]) -> dict:
 
 
 def parse_request(messages: list[dict]) -> dict:
-    """Prefer the configured LLM; use regex parsing on any failure."""
+    """Prefer the configured LLM; use regex parsing on any failure, and enforce dialog context."""
     try:
         result = parse_with_llm(messages)
-        return validate_parsed_request(result)
+        result = validate_parsed_request(result)
     except Exception as exc:
         print(f"LLM parsing unavailable; using regex fallback: {exc}", file=sys.stderr)
-        return validate_parsed_request(parse_request_with_regex(messages))
+        result = validate_parsed_request(parse_request_with_regex(messages))
+    
+    # --- ЖЕЛЕЗОБЕТОННАЯ ПРОВЕРКА ИСТОРИИ ---
+    all_user_text = " ".join([m["text"].lower() for m in messages if m["role"] == "user"])
+    
+    # 1. Проверка города (только города из официального каталога)
+    if result.get("city_id") is None:
+        if "таганрог" in all_user_text:
+            result["city_id"] = "taganrog"
+        elif "ростов" in all_user_text:
+            result["city_id"] = "rostov-na-donu"
+        elif "азов" in all_user_text:
+            result["city_id"] = "azov"
+            
+        if result["city_id"] and "city_id" in result["missing"]:
+            result["missing"].remove("city_id")
+            
+    # 2. Проверка бюджета
+    if result.get("budget_rub") is None:
+        budget_match = re.search(r"до\s*([\d\s\u00a0]+?)\s*(?:₽|руб|р\.)", all_user_text)
+        if budget_match:
+            digits = re.sub(r"\D", "", budget_match.group(1))
+            if digits:
+                result["budget_rub"] = int(digits)
+                if "budget_rub" in result["missing"]:
+                    result["missing"].remove("budget_rub")
+
+    # 3. Проверка категорий
+    if not result.get("categories"):
+        if "стол" in all_user_text and "table" not in result["categories"]:
+            result["categories"].append("table")
+        if "кресл" in all_user_text and "chair" not in result["categories"]:
+            result["categories"].append("chair")
+        if "ламп" in all_user_text and "lamp" not in result["categories"]:
+            result["categories"].append("lamp")
+            
+        if result["categories"] and "categories" in result["missing"]:
+            result["missing"].remove("categories")
+
+    return result
 
 
 def get_question_text(field: str) -> str:
