@@ -1,5 +1,7 @@
 # Контракты проекта
 
+**Бэкенд: готов**
+
 ## CLI
 ./run --catalog data/catalog.json
 - stdin → один JSON
