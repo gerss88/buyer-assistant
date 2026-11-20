@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d0e12">
+  <title>Avito Start — ИИ-помощник покупателя</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="dark">
+  <header class="topbar">
+    <div class="light-garland" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <a class="brand" href="#" aria-label="Avito Start"><span class="brand-dots"><i></i><i></i><i></i><i></i></span><strong>Avito Start</strong></a>
+    <span class="product-label">ИИ-помощник покупателя</span>
+    <button id="themeToggle" class="theme-toggle" type="button" aria-label="Переключить тему"><span id="themeLabel">Тёмная</span><i aria-hidden="true"></i></button>
+    <button id="newChat" class="new-chat" type="button" title="Новый диалог" aria-label="Новый диалог">↻</button>
+  </header>
+  <main class="workspace">
+    <span class="snowflake-float snowflake-left" aria-hidden="true">❄</span>
+    <span class="snowflake-float snowflake-right" aria-hidden="true">❄</span>
+    <section class="conversation-panel" aria-label="Диалог с помощником">
+      <div class="conversation" id="conversation" aria-live="polite">
+        <div class="welcome" id="welcome">
+          <h1>Что подберём?</h1>
+          <p>Напишите, что нужно, в каком городе и на какую сумму. Можно обычными словами.</p>
+          <div class="suggestions" id="suggestions">
+            <button type="button" data-reply="Стол не шире метра, кресло и лампа. Таганрог. До 15 000 ₽ за всё.">Стол, кресло и лампа · Таганрог</button>
+            <button type="button" data-reply="Диван до 50 000 ₽ в Москве">Диван · Москва</button>
+            <button type="button" data-reply="Кровать шириной от 140 см в Казани">Кровать · Казань</button>
+          </div>
+        </div>
+      </div>
+      <footer class="composer-wrap">
+        <form class="composer" id="chatForm">
+          <textarea id="chatInput" rows="1" maxlength="350" placeholder="Напишите, что нужно подобрать…" aria-label="Сообщение помощнику"></textarea>
+          <button id="sendButton" type="submit" aria-label="Отправить сообщение"><svg viewBox="0 0 24 24"><path d="m5 5 14 7-14 7 2.7-7L5 5Z"/><path d="M8 12h10"/></svg></button>
+        </form>
+        <p class="disclaimer">Условия покупателя не меняются из текстов объявлений.</p>
+      </footer>
+    </section>
+    <section class="results-panel" id="resultsPanel" aria-label="Подобранные варианты">
+      <div class="results-empty" id="resultsEmpty"><span>Варианты появятся здесь</span><p>Опишите покупку в сообщении слева</p></div>
+      <div id="resultsContent" hidden></div>
+    </section>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>
