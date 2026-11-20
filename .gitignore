@@ -1,7 +1,14 @@
 .venv/
+venv/
 __pycache__/
-*.pyc
+*.py[cod]
+*.so
 .env
+.env.local
 .streamlit/secrets.toml
 .pytest_cache/
+.coverage
+htmlcov/
 .DS_Store
+*.log
+temp-*/
