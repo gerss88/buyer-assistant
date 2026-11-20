@@ -8,7 +8,13 @@ def load_catalog(catalog_path: str, cities_path: str = "data/cities.json") -> li
         catalog = json.load(f)
         
     with open(cities_path, encoding="utf-8") as f:
-        cities = json.load(f)
+        cities_data = json.load(f)
+
+    # Адаптируемся под формат городов (список объектов)
+    if isinstance(cities_data, list):
+        valid_cities = {city["id"] for city in cities_data}
+    else:
+        valid_cities = set(cities_data.keys())
 
     seen_ids = set()
     for item in catalog:
@@ -18,7 +24,7 @@ def load_catalog(catalog_path: str, cities_path: str = "data/cities.json") -> li
         
         assert item["category"] in VALID_CATEGORIES, f"Неизвестная категория: {item['category']}"
         assert isinstance(item["price_rub"], int) and item["price_rub"] > 0, f"Неверная цена у {item['id']}"
-        assert item["city_id"] in cities, f"Неизвестный город {item['city_id']} у {item['id']}"
+        assert item["city_id"] in valid_cities, f"Неизвестный город {item['city_id']} у {item['id']}"
         assert isinstance(item.get("attributes"), dict), f"Нет поля attributes у {item['id']}"
         
     return catalog
