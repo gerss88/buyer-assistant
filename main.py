@@ -1,66 +1,82 @@
 import argparse
 import json
+import re
 import sys
 
 from catalog import load_catalog
+from llm_client import parse_with_llm
+from schemas import validate_parsed_request
 from solver import solve
 
-# Заглушка для LLM-парсера (пока коллега не напишет llm_client.py)
-def parse_request(messages: list[dict]) -> dict:
-    """Временный парсер на регулярках, чтобы можно было тестировать бэкенд."""
-    import re
-    text = next((m["text"] for m in reversed(messages) if m["role"] == "user"), "").lower()
-    
+
+def parse_request_with_regex(messages: list[dict]) -> dict:
+    """Parse the latest user message using the local, offline fallback."""
+    text = next(
+        (message.get("text", "") for message in reversed(messages)
+         if message.get("role") == "user" and isinstance(message.get("text", ""), str)),
+        "",
+    ).lower()
+
     parsed = {
         "city_id": None,
         "budget_rub": None,
         "categories": [],
         "constraints": {},
-        "missing": []
+        "missing": [],
     }
 
-    # Ищем город
-    if "таганрог" in text:
-        parsed["city_id"] = "taganrog"
-    elif "ростов" in text:
-        parsed["city_id"] = "rostov"
-    else:
+    city_aliases = {
+        "taganrog": ("таганрог",),
+        "rostov-na-donu": ("ростов-на-дону", "ростов на дону", "ростов"),
+        "azov": ("азов",),
+    }
+    for city_id, aliases in city_aliases.items():
+        if any(alias in text for alias in aliases):
+            parsed["city_id"] = city_id
+            break
+    if parsed["city_id"] is None:
         parsed["missing"].append("city_id")
 
-    # Ищем бюджет (например, "до 15000", "до 15 000")
-    budget_match = re.search(r"до\s*([\d\s]+)\s*(?:₽|руб|р\.)", text)
+    budget_match = re.search(r"до\s*([\d\s\u00a0]+?)\s*(?:₽|руб(?:лей|ля|ль)?\b|р\.)", text)
     if budget_match:
-        # Убираем пробелы из числа
-        budget_str = budget_match.group(1).replace(" ", "")
-        parsed["budget_rub"] = int(budget_str)
-    else:
+        digits = re.sub(r"\D", "", budget_match.group(1))
+        if digits:
+            parsed["budget_rub"] = int(digits)
+    if parsed["budget_rub"] is None:
         parsed["missing"].append("budget_rub")
 
-    # Ищем категории
     if "стол" in text:
         parsed["categories"].append("table")
     if "кресл" in text:
         parsed["categories"].append("chair")
     if "ламп" in text:
         parsed["categories"].append("lamp")
-        
     if not parsed["categories"]:
         parsed["missing"].append("categories")
 
-    # Ищем ограничения (ширина)
-    if "не шире метра" in text or "до 100 см" in text:
+    if "не шире метра" in text or re.search(r"до\s*100\s*см", text):
         parsed["constraints"]["table"] = {"width_cm": {"max": 100}}
-
     return parsed
 
+
+def parse_request(messages: list[dict]) -> dict:
+    """Prefer the configured LLM; use regex parsing on any failure."""
+    try:
+        result = parse_with_llm(messages)
+        return validate_parsed_request(result)
+    except Exception as exc:
+        print(f"LLM parsing unavailable; using regex fallback: {exc}", file=sys.stderr)
+        return validate_parsed_request(parse_request_with_regex(messages))
+
+
 def get_question_text(field: str) -> str:
-    """Возвращает текст уточняющего вопроса."""
     questions = {
         "budget_rub": "Какой у вас бюджет на весь комплект?",
         "city_id": "В каком городе искать?",
-        "categories": "Какие категории товаров нужны?"
+        "categories": "Какие категории товаров нужны?",
     }
     return questions.get(field, "Уточните запрос.")
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -68,70 +84,55 @@ def main():
     args = parser.parse_args()
 
     try:
-        # Читаем JSON из stdin
         input_data = json.load(sys.stdin)
         messages = input_data.get("messages", [])
-        
         if not messages:
             raise ValueError("Пустой список messages")
 
-        # 1. Загружаем каталог
         catalog = load_catalog(args.catalog)
-
-        # 2. Парсим запрос (пока локальной заглушкой)
         parsed = parse_request(messages)
 
-        # 3. Если чего-то не хватает — уточняем
         if parsed["missing"]:
             output = {
                 "status": "clarify",
                 "questions": [
                     {"field": field, "text": get_question_text(field)}
                     for field in parsed["missing"]
-                ]
+                ],
             }
             print(json.dumps(output, ensure_ascii=False))
             return
 
-        # 4. Ищем комплекты
         result = solve(catalog, parsed)
-
-        # 5. Формируем ответ
         if result["status"] == "no_match":
-            output = {
-                "status": "no_match",
-                "message": result["reason"]
-            }
+            output = {"status": "no_match", "message": result["reason"]}
         else:
-            # Для каждого найденного комплекта делаем объяснение
             catalog_dict = {item["id"]: item for item in catalog}
             options = []
-            for opt in result["options"]:
-                # Собираем строку объяснения из названий товаров
-                titles = [catalog_dict[lid]["title"] for lid in opt["listing_ids"]]
-                explanation = f"В комплект входят: {', '.join(titles)}. Общая стоимость: {opt['total_rub']} ₽."
-                
+            for option in result["options"]:
+                titles = [catalog_dict[item_id]["title"] for item_id in option["listing_ids"]]
+                explanation = (
+                    f"В комплект входят: {', '.join(titles)}. "
+                    f"Общая стоимость: {option['total_rub']} ₽."
+                )
                 options.append({
-                    "listing_ids": opt["listing_ids"],
-                    "total_rub": opt["total_rub"],
-                    "explanation": explanation
+                    "listing_ids": option["listing_ids"],
+                    "total_rub": option["total_rub"],
+                    "explanation": explanation,
                 })
-            
-            output = {
-                "status": "ok",
-                "options": options
-            }
+            output = {"status": "ok", "options": options}
 
-        # Выводим строго один JSON в stdout
         print(json.dumps(output, ensure_ascii=False))
-
-    except Exception as e:
-        # При любой ошибке логируем в stderr и отдаем понятный JSON
-        print(f"Error: {e}", file=sys.stderr)
+    except Exception as exc:
+        print(f"Error: {exc}", file=sys.stderr)
         print(json.dumps({
             "status": "clarify",
-            "questions": [{"field": "retry", "text": "Произошла ошибка при обработке запроса. Попробуйте еще раз."}]
+            "questions": [{
+                "field": "retry",
+                "text": "Произошла ошибка при обработке запроса. Попробуйте еще раз.",
+            }],
         }, ensure_ascii=False))
+
 
 if __name__ == "__main__":
     main()
