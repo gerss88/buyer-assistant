@@ -1,13 +1,14 @@
 """Small OpenAI-compatible chat-completions client for the configured Gemma API."""
 
 import json
+import sys
 import os
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-DEFAULT_TIMEOUT_SECONDS = 5
+DEFAULT_TIMEOUT_SECONDS = 60
 
 
 def _load_local_env():
@@ -25,21 +26,20 @@ def _load_local_env():
 
 
 def parse_with_llm(messages: list[dict]) -> dict:
-    """Call a configured OpenAI-compatible endpoint and decode its JSON response.
-
-    Catalog records are intentionally not accepted by this function or included
-    in the request. The only user-controlled content sent to the model is the
-    conversation text, which the system prompt labels as untrusted input.
-    """
+    """Call a configured OpenAI-compatible endpoint and decode its JSON response."""
     _load_local_env()
     api_key = os.getenv("LLM_API_KEY")
     base_url = os.getenv("LLM_BASE_URL", "").strip().rstrip("/")
-    model = os.getenv("LLM_MODEL", "gemma-4-31b").strip()
+    model = os.getenv("LLM_MODEL", "google/gemma-4-31B-it").strip()
+    user_agent = os.getenv("LLM_USER_AGENT", "team-09/1.0").strip()
+    
     if not api_key or not base_url or not model:
         raise RuntimeError("LLM_API_KEY, LLM_BASE_URL и LLM_MODEL должны быть настроены")
 
     endpoint = base_url if base_url.endswith("/chat/completions") else f"{base_url}/chat/completions"
     system_prompt = (PROJECT_ROOT / "prompts" / "parse.md").read_text(encoding="utf-8")
+    
+    # Формируем историю сообщений
     user_messages = [
         {"role": message["role"], "content": message["text"]}
         for message in messages
@@ -54,7 +54,9 @@ def parse_with_llm(messages: list[dict]) -> dict:
         "model": model,
         "messages": [{"role": "system", "content": system_prompt}, *user_messages],
         "temperature": 0,
+        "response_format": {"type": "json_object"} # Просим модель вернуть JSON
     }).encode("utf-8")
+    
     request = Request(
         endpoint,
         data=body,
@@ -62,6 +64,7 @@ def parse_with_llm(messages: list[dict]) -> dict:
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "User-Agent": user_agent, # <--- ВОТ ОН, ДОБАВЛЕННЫЙ ЗАГОЛОВОК
         },
         method="POST",
     )
@@ -71,12 +74,24 @@ def parse_with_llm(messages: list[dict]) -> dict:
         with urlopen(request, timeout=timeout) as response:
             response_data = json.loads(response.read().decode("utf-8"))
     except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
+        # --- ДОБАВЛЯЕМ ЭТУ СТРОКУ ---
+        if isinstance(exc, HTTPError):
+            print(f"DEBUG ERROR BODY: {exc.read().decode('utf-8')}", file=sys.stderr)
+        # -----------------------------
         raise RuntimeError(f"Ошибка вызова LLM API: {exc}") from exc
 
     try:
         content = response_data["choices"][0]["message"]["content"]
         if not isinstance(content, str):
             raise ValueError("Поле content должно быть строкой")
-        return json.loads(content)
+        
+        # Иногда модель оборачивает JSON в markdown-теги ```json ... ```
+        # Убираем их, если они есть
+        if content.startswith("```json"):
+            content = content[7:]
+        if content.endswith("```"):
+            content = content[:-3]
+            
+        return json.loads(content.strip())
     except (KeyError, IndexError, TypeError, json.JSONDecodeError, ValueError) as exc:
         raise ValueError(f"API вернул некорректный JSON ответа: {exc}") from exc
