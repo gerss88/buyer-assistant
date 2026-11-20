@@ -1,6 +1,10 @@
 import streamlit as st
 import json
+import os
 import subprocess
+import sys
+import traceback
+from pathlib import Path
 
 st.set_page_config(page_title="Avito Start", layout="wide", page_icon="🛒")
 
@@ -9,6 +13,7 @@ if "theme" not in st.session_state: st.session_state.theme = "light"
 if "messages" not in st.session_state: st.session_state.messages = []
 if "current_state" not in st.session_state: st.session_state.current_state = "start"
 if "last_option" not in st.session_state: st.session_state.last_option = None
+if "current_question_fields" not in st.session_state: st.session_state.current_question_fields = []
 
 # --- ПЕРЕКЛЮЧАТЕЛЬ В САЙДБАРЕ (скрыт, управляем через шапку) ---
 with st.sidebar:
@@ -119,11 +124,66 @@ st.markdown(f"""
 # --- ФУНКЦИИ ---
 def call_backend(messages):
     payload = json.dumps({"messages": messages})
+    project_root = Path(__file__).resolve().parent.parent
+    backend_env = os.environ.copy()
+    backend_env["PYTHONIOENCODING"] = "utf-8"
     try:
-        result = subprocess.run(["./run", "--catalog", "data/catalog.json"], input=payload, capture_output=True, text=True, check=True)
-        return json.loads(result.stdout)
+        result = subprocess.run(
+            [sys.executable, str(project_root / "main.py"), "--catalog", str(project_root / "data" / "catalog.json")],
+            input=payload,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=True,
+            cwd=project_root,
+            env=backend_env,
+        )
+        response = json.loads(result.stdout)
+        questions = response.get("questions", [])
+        if any(question.get("field") == "retry" for question in questions) and result.stderr.strip():
+            print(f"Backend error details:\n{result.stderr.strip()}", file=sys.stderr, flush=True)
+        return response
     except Exception as e:
-        return {"status": "no_match", "message": f"Ошибка: {str(e)}"}
+        diagnostics = [f"Backend call failed ({type(e).__name__}): {e}"]
+        backend_stderr = getattr(e, "stderr", None)
+        if "result" in locals():
+            diagnostics.append(f"Backend return code: {result.returncode}")
+            diagnostics.append(f"Backend stdout type: {type(result.stdout).__name__}")
+            if backend_stderr is None:
+                backend_stderr = result.stderr
+        if backend_stderr:
+            diagnostics.append(f"Backend stderr:\n{backend_stderr}")
+        print(
+            "\n".join(diagnostics) + f"\n{traceback.format_exc()}",
+            file=sys.stderr,
+            flush=True,
+        )
+        return {
+            "status": "clarify",
+            "questions": [{
+                "field": "retry",
+                "text": "Не удалось обработать запрос. Подробности ошибки есть в терминале запуска.",
+            }],
+        }
+
+def submit_message(message_text):
+    st.session_state.messages.append({"role": "user", "text": message_text})
+    response = call_backend(st.session_state.messages)
+    st.session_state.current_state = response.get("status", "no_match")
+    st.session_state.current_question_fields = []
+
+    if response["status"] == "ok" and response.get("options"):
+        option = response["options"][0]
+        price_str = f"{option['total_rub']:,}".replace(",", " ")
+        st.session_state.messages.append({"role": "assistant", "text": f"Нашёл комплект. Итого: {price_str} ₽."})
+        st.session_state.last_option = option
+    elif response["status"] == "clarify":
+        questions = response.get("questions", [])
+        st.session_state.current_question_fields = [question.get("field") for question in questions]
+        question_text = questions[0].get("text", "Уточните запрос.") if questions else "Уточните запрос."
+        st.session_state.messages.append({"role": "assistant", "text": question_text})
+    else:
+        st.session_state.messages.append({"role": "assistant", "text": response.get("message", "Не удалось обработать запрос.")})
 
 # --- ШАПКА ---
 st.markdown(f"""
@@ -142,19 +202,7 @@ for msg in st.session_state.messages:
 
 # --- ВВОД ---
 if user_input := st.chat_input("Напишите, что нужно подобрать"):
-    st.session_state.messages.append({"role": "user", "text": user_input})
-    res = call_backend(st.session_state.messages)
-    st.session_state.current_state = res["status"]
-    
-    if res["status"] == "ok":
-        opt = res["options"][0]
-        price_str = f"{opt['total_rub']:,}".replace(",", " ")
-        st.session_state.messages.append({"role": "assistant", "text": f"Нашёл комплект. Итого: {price_str} ₽."})
-        st.session_state.last_option = opt
-    elif res["status"] == "clarify":
-        st.session_state.messages.append({"role": "assistant", "text": res["questions"][0]["text"]})
-    else:
-        st.session_state.messages.append({"role": "assistant", "text": res["message"]})
+    submit_message(user_input)
     st.rerun()
 
 # --- СОСТОЯНИЕ: OK ---
@@ -214,16 +262,23 @@ if st.session_state.current_state == "ok" and st.session_state.last_option:
 
 # --- СОСТОЯНИЕ: CLARIFY ---
 elif st.session_state.current_state == "clarify":
-    st.markdown(f"""
-    <div style="margin-top: 20px;">
-        <div style="font-size: 40px; font-weight: 900; line-height: 1.1; margin-bottom: 30px; color: {text};">Какой бюджет на весь комплект?</div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    c1, c2, c3 = st.columns(3)
-    if c1.button("10 000 ₽"): st.session_state.messages.append({"role": "user", "text": "До 10 000 ₽"}); st.rerun()
-    if c2.button("15 000 ₽"): st.session_state.messages.append({"role": "user", "text": "До 15 000 ₽"}); st.rerun()
-    if c3.button("20 000 ₽"): st.session_state.messages.append({"role": "user", "text": "До 20 000 ₽"}); st.rerun()
+    if "budget_rub" in st.session_state.current_question_fields:
+        st.markdown(f"""
+        <div style="margin-top: 20px;">
+            <div style="font-size: 40px; font-weight: 900; line-height: 1.1; margin-bottom: 30px; color: {text};">Какой бюджет на весь комплект?</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        c1, c2, c3 = st.columns(3)
+        if c1.button("10 000 ₽"):
+            submit_message("До 10 000 рублей")
+            st.rerun()
+        if c2.button("15 000 ₽"):
+            submit_message("До 15 000 рублей")
+            st.rerun()
+        if c3.button("20 000 ₽"):
+            submit_message("До 20 000 рублей")
+            st.rerun()
 
 # --- СОСТОЯНИЕ: NO_MATCH ---
 elif st.session_state.current_state == "no_match":
@@ -234,5 +289,9 @@ elif st.session_state.current_state == "no_match":
     </div>
     """, unsafe_allow_html=True)
     
-    if st.button("Увеличить бюджет"): st.session_state.messages.append({"role": "user", "text": "Увеличить бюджет"}); st.rerun()
-    if st.button("Ослабить ширину"): st.session_state.messages.append({"role": "user", "text": "Ослабить ширину"}); st.rerun()
+    if st.button("Увеличить бюджет"):
+        submit_message("Увеличить бюджет")
+        st.rerun()
+    if st.button("Ослабить ширину"):
+        submit_message("Ослабить ширину")
+        st.rerun()

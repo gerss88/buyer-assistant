@@ -11,11 +11,12 @@ from solver import solve
 
 def parse_request_with_regex(messages: list[dict]) -> dict:
     """Parse the latest user message using the local, offline fallback."""
-    text = next(
-        (message.get("text", "") for message in reversed(messages)
-         if message.get("role") == "user" and isinstance(message.get("text", ""), str)),
-        "",
-    ).lower()
+    user_texts = [
+        message.get("text", "")
+        for message in messages
+        if message.get("role") == "user" and isinstance(message.get("text", ""), str)
+    ]
+    text = " ".join(user_texts).lower()
 
     parsed = {
         "city_id": None,
@@ -30,18 +31,29 @@ def parse_request_with_regex(messages: list[dict]) -> dict:
         "rostov-na-donu": ("ростов-на-дону", "ростов на дону", "ростов"),
         "azov": ("азов",),
     }
-    for city_id, aliases in city_aliases.items():
-        if any(alias in text for alias in aliases):
-            parsed["city_id"] = city_id
+    for user_text in reversed(user_texts):
+        normalized_user_text = user_text.lower()
+        for city_id, aliases in city_aliases.items():
+            if any(alias in normalized_user_text for alias in aliases):
+                parsed["city_id"] = city_id
+                break
+        if parsed["city_id"] is not None:
             break
     if parsed["city_id"] is None:
         parsed["missing"].append("city_id")
 
-    budget_match = re.search(r"до\s*([\d\s\u00a0]+?)\s*(?:₽|руб(?:лей|ля|ль)?\b|р\.)", text)
+    budget_matches = list(re.finditer(
+        r"до\s*([\d\s\u00a0]+?)\s*(тыс(?:\.|яч(?:а|и)?)?)?\s*"
+        r"(?:₽|руб(?:лей|ля|ль)?\b|р\.)",
+        text,
+    ))
+    budget_match = budget_matches[-1] if budget_matches else None
     if budget_match:
         digits = re.sub(r"\D", "", budget_match.group(1))
         if digits:
             parsed["budget_rub"] = int(digits)
+            if budget_match.group(2):
+                parsed["budget_rub"] *= 1000
     if parsed["budget_rub"] is None:
         parsed["missing"].append("budget_rub")
 
