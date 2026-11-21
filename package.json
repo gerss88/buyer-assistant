@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "description": "Локальный помощник покупателя по учебному каталогу объявлений",
-  "scripts": { "start": "node server.js", "test": "node --test" },
-  "engines": { "node": ">=18" }
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/assistant.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
 }
