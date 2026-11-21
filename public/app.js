@@ -67,7 +67,7 @@ function resultCard(option, index, count, requirements) {
   const ads = option.listing_ids.map(id => listings.find(item => item.id === id)).filter(Boolean);
   const card = document.createElement('article'); card.className = 'result-card'; card.dataset.variant = String(index);
   const kicker = document.createElement('div'); kicker.className = 'result-kicker';
-  kicker.textContent = `КОМПЛЕКТ · ${cityName(ads[0]?.city_id)}`;
+  kicker.textContent = `${ads.length === 1 ? (categoryById(ads[0]?.category)?.name || 'Товар').toLocaleUpperCase('ru') : 'КОМПЛЕКТ'} · ${cityName(ads[0]?.city_id)}`;
   const header = document.createElement('div'); header.className = 'result-heading';
   const total = document.createElement('strong'); total.className = 'result-total'; total.textContent = price(option.total_rub);
   const budget = document.createElement('span'); budget.className = 'budget-note';
