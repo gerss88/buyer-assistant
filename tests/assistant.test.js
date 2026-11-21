@@ -5,7 +5,7 @@ const { buildSchema, buildSystemPrompt, normalizeNumericEquality, validateRequir
 
 const basic = overrides => ({
   city_id: 'taganrog', city_mentioned: null, budget_rub: 15000,
-  categories: ['table'], unsupported_categories: [], constraints: [],
+  categories: ['table'], unsupported_categories: [], unsupported_constraints: [], constraints: [],
   ...overrides
 });
 const condition = (category, attribute, operator, value) => ({ category, attribute, operator, value });
@@ -75,10 +75,13 @@ test('dynamic parser schema includes the expanded city, category, and attribute 
   assert.equal(schema.properties.city_id.type[0], 'string');
   assert.equal(schema.properties.categories.items.type, 'string');
   assert.equal(schema.properties.constraints.items.properties.attribute.type, 'string');
+  assert.equal(schema.properties.unsupported_constraints.items.properties.attribute_name.type, 'string');
   const prompt = buildSystemPrompt(cities, categories);
   assert.match(prompt, /Санкт-Петербург/);
   assert.match(prompt, /refrigerator/);
   assert.match(prompt, /volume_l/);
+  assert.match(prompt, /unsupported_constraints/);
+  assert.match(prompt, /Никогда не пропускай такое условие/);
   assert.match(prompt, /НОВОЙ задачей/);
   assert.match(prompt, /полностью сбрось/i);
 });
@@ -88,7 +91,7 @@ test('parser validation is category and attribute metadata driven', () => {
   const localCategories = [{ id: 'headphones', name: 'Наушники', attributes: {
     weight_g: { name: 'Вес', type: 'number', unit: 'г' }, wireless: { name: 'Беспроводные', type: 'boolean' }, color: { name: 'Цвет', type: 'string' }
   } }];
-  const result = { city_id: 'omsk', city_mentioned: null, budget_rub: 8000, categories: ['headphones'], unsupported_categories: [], constraints: [
+  const result = { city_id: 'omsk', city_mentioned: null, budget_rub: 8000, categories: ['headphones'], unsupported_categories: [], unsupported_constraints: [], constraints: [
     condition('headphones', 'weight_g', 'max', 250), condition('headphones', 'wireless', 'eq', false), condition('headphones', 'color', 'eq', 'Black')
   ] };
   assert.equal(validateRequirements(result, localCities, localCategories), result);
@@ -264,6 +267,76 @@ test('parser rejects unknown category attributes and malformed operators instead
   assert.throws(() => validateRequirements({ ...valid, categories: ['table', 'table'] }, cities, categories), /категории/);
   assert.throws(() => validateRequirements({ ...valid, constraints: [condition('table', 'missing_attr', 'max', 100)] }, cities, categories), /характеристику/);
   assert.throws(() => validateRequirements({ ...valid, constraints: [condition('chair', 'adjustable_height', 'max', true)] }, cities, categories), /Булевую/);
+});
+
+test('lamp color and touch-control filters use only catalog-confirmed facts', () => {
+  const whiteTouchRequest = basic({
+    city_id: 'taganrog',
+    categories: ['lamp'],
+    constraints: [
+      condition('lamp', 'color', 'eq', 'белый'),
+      condition('lamp', 'touch_control', 'eq', true)
+    ]
+  });
+  const matches = catalog.filter(ad => ad.category === 'lamp' && qualifies(ad, whiteTouchRequest));
+  assert.deepEqual(matches.map(ad => ad.id), ['demo-1-3-02']);
+  assert.equal(matches[0].attributes.color, 'белый');
+  assert.equal(matches[0].attributes.touch_control, true);
+});
+
+test('unknown catalog values never satisfy color or touch-control filters', () => {
+  const whiteRequest = basic({
+    categories: ['lamp'],
+    constraints: [condition('lamp', 'color', 'eq', 'белый')]
+  });
+  const matches = catalog.filter(ad => ad.category === 'lamp' && qualifies(ad, whiteRequest));
+  assert.ok(matches.length > 0);
+  assert.ok(matches.every(ad => ad.attributes.color === 'белый'));
+  assert.ok(!matches.some(ad => ad.id === 'demo-2-3-11'));
+});
+
+test('unsupported buyer characteristics stop подбор and ask before dropping the condition', () => {
+  const req = basic({
+    categories: ['lamp'],
+    unsupported_constraints: [{ category: 'lamp', attribute_name: 'яркость', requested_value: 'не менее 1000 лм' }]
+  });
+  const result = answer(req);
+  assert.equal(result.status, 'clarify');
+  const question = result.questions.find(item => item.field === 'unsupported_constraints');
+  assert.ok(question);
+  assert.match(question.text, /не буду игнорировать/);
+  assert.equal(question.suggestions[0].label, 'Продолжить без «яркость»');
+});
+
+test('parser accepts explicit unsupported attributes but still rejects unknown attributes in supported constraints', () => {
+  const req = basic({
+    unsupported_constraints: [{ category: 'lamp', attribute_name: 'яркость', requested_value: '1000 лм' }]
+  });
+  assert.equal(validateRequirements(req, cities, categories), req);
+  assert.throws(() => validateRequirements({
+    ...req,
+    unsupported_constraints: [],
+    constraints: [condition('lamp', 'brightness_lm', 'min', 1000)]
+  }, cities, categories), /характеристику/);
+});
+
+test('string attribute aliases normalize to catalog canonical values', () => {
+  const req = basic({ categories: ['lamp'], constraints: [condition('lamp', 'color', 'eq', 'белую')] });
+  const normalized = normalizeNumericEquality(req, categories);
+  assert.equal(normalized.constraints[0].value, 'белый');
+  assert.equal(qualifies(catalog.find(ad => ad.id === 'demo-1-3-02'), normalized), true);
+});
+
+test('white touch-control lamp is not falsely found in Rostov when the catalog has no listing confirming both', () => {
+  const req = basic({
+    city_id: 'rostov-na-donu',
+    categories: ['lamp'],
+    constraints: [
+      condition('lamp', 'color', 'eq', 'белый'),
+      condition('lamp', 'touch_control', 'eq', true)
+    ]
+  });
+  assert.equal(answer(req).status, 'no_match');
 });
 
 test('listing text cannot change selection conditions', () => {
