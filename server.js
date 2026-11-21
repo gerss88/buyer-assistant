@@ -131,7 +131,12 @@ function answer(requirements, sourceCatalog = catalog) {
     const unavailable = requirements.categories.filter((category, index) => pools[index].length === 0);
     const place = cityById[requirements.city_id].name;
     const message = unavailable.length
-      ? `В ${place} не нашёл ${unavailable.map(category => categoryById[category].name.toLowerCase()).join(', ')} с такими характеристиками. Можно ослабить ограничение или выбрать другой город.`
+      ? `В ${place} не нашёл ${unavailable.map(category => {
+        const name = categoryById[category].name.toLowerCase();
+        return categoryBudgets.has(category)
+          ? `${name} в пределах ${categoryBudgets.get(category).toLocaleString('ru-RU')} ₽ с указанными характеристиками`
+          : `${name} с такими характеристиками`;
+      }).join(', ')}. Можно ослабить ограничение или выбрать другой город.`
       : `Самый недорогой полный комплект в ${place} стоит ${pools.reduce((sum, pool) => sum + Math.min(...pool.map(ad => ad.price_rub)), 0).toLocaleString('ru-RU')} ₽, это выше бюджета ${requirements.budget_rub.toLocaleString('ru-RU')} ₽.`;
     return { status: 'no_match', message };
   }
