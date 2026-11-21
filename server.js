@@ -105,6 +105,20 @@ function answer(requirements, sourceCatalog = catalog) {
     missing.push({ field: 'city_id', text: ask });
   }
   if (requirements.budget_rub === null) missing.push({ field: 'budget_rub', text: requirements.categories.length > 1 ? 'Какой бюджет рассматриваете на весь комплект?' : 'Какой бюджет рассматриваете на эту покупку?' });
+  if (requirements.unsupported_constraints?.length) {
+    const details = requirements.unsupported_constraints.map(item => {
+      const categoryName = categoryById[item.category]?.name || item.category;
+      return `«${item.attribute_name}» (${categoryName.toLocaleLowerCase('ru')}: ${item.requested_value})`;
+    });
+    missing.push({
+      field: 'unsupported_constraints',
+      text: `В каталоге нет структурированной характеристики для ${details.join(', ')}. Я не буду игнорировать это условие или показывать непроверенные объявления как подходящие. Можно продолжить подбор без этого требования.`,
+      suggestions: requirements.unsupported_constraints.map(item => ({
+        label: `Продолжить без «${item.attribute_name}»`,
+        value: `Убери требование «${item.attribute_name}» для категории «${categoryById[item.category]?.name || item.category}» и продолжи подбор без него.`
+      }))
+    });
+  }
   if (missing.length) return { status: 'clarify', questions: missing };
 
   const options = findOptions(requirements, sourceCatalog);
