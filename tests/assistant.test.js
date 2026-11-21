@@ -447,3 +447,16 @@ test('category budgets reject invalid, duplicate, and unrelated categories', () 
   assert.throws(() => validateRequirements({ ...valid, category_budgets: [{ category: 'table', budget_rub: 1000 }, { category: 'table', budget_rub: 2000 }] }, cities, categories), /бюджеты категорий/);
   assert.throws(() => validateRequirements({ ...valid, category_budgets: [{ category: 'lamp', budget_rub: 1000 }] }, cities, categories), /Бюджет указан/);
 });
+
+
+test('no-match messages add the word городе without declining the city name', () => {
+  const req = basic({
+    categories: ['table'],
+    category_budgets: [{ category: 'table', budget_rub: 100 }],
+    budget_rub: null
+  });
+  const result = answer(req, [listing('table-over-cap', 'table', 1000, {})]);
+  assert.equal(result.status, 'no_match');
+  assert.match(result.message, /В городе Таганрог не нашёл/);
+  assert.doesNotMatch(result.message, /В Таганроге/);
+});
