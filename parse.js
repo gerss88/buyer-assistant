@@ -84,6 +84,62 @@ function normalizeNumericEquality(input, categories) {
   };
 }
 
+function extractExplicitCategoryBudgets(messages, categories) {
+  const lastUserMessage = [...messages].reverse().find(message => message.role === 'user' && typeof message.text === 'string')?.text;
+  if (!lastUserMessage) return [];
+
+  const text = lastUserMessage.normalize('NFC').toLocaleLowerCase('ru').replace(/ё/g, 'е');
+  const clauses = text.split(/[;.!?\n]+|,\s*(?=[\p{L}])/u);
+  const budgets = new Map();
+  const budgetPattern = /(?:до|не\s+дороже|не\s+более|максимум|лимит(?:\s+(?:на|для))?|бюджет(?:\s+(?:на|для))?)\s*[:—-]?\s*(\d{1,3}(?:[\s\u00a0]\d{3})+|\d+(?:[.,]\d+)?)\s*(тыс(?:яч(?:а|и)?)?\.?|к(?![\p{L}])|руб(?:лей|ля|ль|\.?)|₽)(?![\p{L}])/giu;
+
+  for (const clause of clauses) {
+    if (/общ(?:ий|ая|ее|ие)\s+(?:бюджет|лимит)|на\s+все|на\s+все\s+товары|за\s+все|весь\s+комплект|на\s+комплект|всего/.test(clause)) continue;
+
+    const mentioned = categories.filter(category => {
+      const aliases = [category.name, ...(category.aliases || [])]
+        .map(alias => alias.normalize('NFC').toLocaleLowerCase('ru').replace(/ё/g, 'е'));
+      return aliases.some(alias => alias && clause.includes(alias));
+    });
+    if (mentioned.length !== 1) continue;
+
+    const matches = [...clause.matchAll(budgetPattern)];
+    if (!matches.length) continue;
+    const match = matches.at(-1);
+    const numeric = Number(match[1].replace(/[\s\u00a0]/g, '').replace(',', '.'));
+    const isThousands = /^(?:тыс|к)/i.test(match[2]);
+    const budget = isThousands ? numeric * 1000 : numeric;
+    if (Number.isSafeInteger(budget) && budget >= 0) budgets.set(mentioned[0].id, budget);
+  }
+
+  return [...budgets].map(([category, budget_rub]) => ({ category, budget_rub }));
+}
+
+function normalizeExplicitCategoryBudgets(input, messages, categories) {
+  const explicitBudgets = extractExplicitCategoryBudgets(messages, categories);
+  if (!explicitBudgets.length) return input;
+
+  const budgets = new Map((input.category_budgets || []).map(item => [item.category, item.budget_rub]));
+  for (const item of explicitBudgets) budgets.set(item.category, item.budget_rub);
+
+  const categoryById = new Map(categories.map(category => [category.id, category]));
+  const explicitByCategory = new Map(explicitBudgets.map(item => [item.category, item.budget_rub]));
+  const constraints = input.constraints.filter(constraint => {
+    const budget = explicitByCategory.get(constraint.category);
+    const definition = categoryById.get(constraint.category)?.attributes?.[constraint.attribute];
+    const numericValue = typeof constraint.value === 'number' ? constraint.value : Number(constraint.value);
+    // Gemma sometimes places a price cap in a product attribute, e.g.
+    // chair.adjustable_height <= 5000. Recover it as a category budget above.
+    return !(budget !== undefined && constraint.operator !== 'eq' && numericValue === budget && definition);
+  });
+
+  return {
+    ...input,
+    category_budgets: [...budgets].map(([category, budget_rub]) => ({ category, budget_rub })),
+    constraints
+  };
+}
+
 function validateRequirements(input, cities, categories) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw new Error('Модель вернула некорректный разбор условий.');
   const cityIds = new Set(cities.map(city => city.id));
@@ -149,7 +205,8 @@ async function parseConversation(messages, { cities, categories, baseUrl, model,
   if (!response.ok) throw new Error(data?.error?.message || `Ошибка API модели (${response.status}).`);
   const content = data?.choices?.[0]?.message?.content;
   if (!content) throw new Error('Модель вернула пустой ответ.');
-  return validateRequirements(normalizeNumericEquality(JSON.parse(content), categories), cities, categories);
+  const normalized = normalizeNumericEquality(JSON.parse(content), categories);
+  return validateRequirements(normalizeExplicitCategoryBudgets(normalized, messages, categories), cities, categories);
 }
 
-module.exports = { ATTRIBUTE_OPERATORS, buildSchema, buildSystemPrompt, normalizeNumericEquality, parseConversation, validateRequirements };
+module.exports = { ATTRIBUTE_OPERATORS, buildSchema, buildSystemPrompt, extractExplicitCategoryBudgets, normalizeExplicitCategoryBudgets, normalizeNumericEquality, parseConversation, validateRequirements };

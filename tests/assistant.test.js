@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { answer, findOptions, qualifies, within, catalog, cities, categories } = require('../server');
-const { buildSchema, buildSystemPrompt, normalizeNumericEquality, validateRequirements } = require('../parse');
+const { buildSchema, buildSystemPrompt, extractExplicitCategoryBudgets, normalizeExplicitCategoryBudgets, normalizeNumericEquality, validateRequirements } = require('../parse');
 
 const basic = overrides => ({
   city_id: 'taganrog', city_mentioned: null, budget_rub: 15000, category_budgets: [],
@@ -382,6 +382,28 @@ test('separate table and chair budgets are parsed as category budgets, not produ
     assert.ok(ads.find(ad => ad.category === 'table').price_rub <= 10000);
     assert.ok(ads.find(ad => ad.category === 'chair').price_rub <= 5000);
   }
+});
+
+test('explicit category price caps repair Gemma budget values misparsed as product constraints', () => {
+  const messages = [{ role: 'user', text: 'Найди стол до 10 000 рублей, кресло до 5 000 рублей, общий бюджет 12 000 рублей.' }];
+  const parsed = basic({
+    budget_rub: 12000,
+    categories: ['table', 'chair'],
+    constraints: [
+      condition('table', 'width_cm', 'max', 10000),
+      condition('chair', 'adjustable_height', 'max', 5000)
+    ]
+  });
+
+  assert.deepEqual(extractExplicitCategoryBudgets(messages, categories), [
+    { category: 'table', budget_rub: 10000 }, { category: 'chair', budget_rub: 5000 }
+  ]);
+  const normalized = normalizeExplicitCategoryBudgets(parsed, messages, categories);
+  assert.deepEqual(normalized.category_budgets, [
+    { category: 'table', budget_rub: 10000 }, { category: 'chair', budget_rub: 5000 }
+  ]);
+  assert.deepEqual(normalized.constraints, []);
+  assert.equal(validateRequirements(normalized, cities, categories), normalized);
 });
 
 test('three categories keep three independent budgets', () => {
