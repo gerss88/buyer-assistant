@@ -54,6 +54,7 @@ function addReplies(parent, options, mode = 'reply') {
 
 function clarificationReplies(result) {
   const fields = new Set(result.questions.map(question => question.field));
+  if (fields.has('unsupported_constraints')) return result.questions.find(question => question.field === 'unsupported_constraints')?.suggestions || [];
   if (fields.has('budget_rub')) return [
     { label: '10 000 ₽', value: '10 000 ₽' }, { label: '15 000 ₽', value: '15 000 ₽' },
     { label: '20 000 ₽', value: '20 000 ₽' }, { label: 'Свой бюджет', value: '', mode: 'fill' }
