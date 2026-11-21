@@ -79,6 +79,8 @@ test('dynamic parser schema includes the expanded city, category, and attribute 
   assert.match(prompt, /Санкт-Петербург/);
   assert.match(prompt, /refrigerator/);
   assert.match(prompt, /volume_l/);
+  assert.match(prompt, /НОВОЙ задачей/);
+  assert.match(prompt, /полностью сбрось/i);
 });
 
 test('parser validation is category and attribute metadata driven', () => {
@@ -241,6 +243,12 @@ test('clarification asks all missing primary fields in contract order', () => {
   assert.equal(result.status, 'clarify');
   assert.deepEqual(result.questions.map(question => question.field), ['categories', 'city_id', 'budget_rub']);
   assert.match(result.questions.find(question => question.field === 'city_id').text, /Москва/);
+});
+
+test('single-product request asks for its own budget instead of inheriting a kit budget', () => {
+  const result = answer(basic({ categories: ['lamp'], budget_rub: null }));
+  assert.equal(result.status, 'clarify');
+  assert.equal(result.questions.find(question => question.field === 'budget_rub').text, 'Какой бюджет рассматриваете на эту покупку?');
 });
 
 test('unsupported city and category ask for a supported alternative', () => {
