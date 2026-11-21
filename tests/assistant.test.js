@@ -325,6 +325,7 @@ test('string attribute aliases normalize to catalog canonical values', () => {
   const normalized = normalizeNumericEquality(req, categories);
   assert.equal(normalized.constraints[0].value, 'белый');
   assert.equal(qualifies(catalog.find(ad => ad.id === 'demo-1-3-02'), normalized), true);
+  assert.throws(() => validateRequirements({ ...normalized, constraints: [condition('lamp', 'color', 'eq', 'молочный')] }, cities, categories), /значение вне справочника/);
 });
 
 test('white touch-control lamp is not falsely found in Rostov when the catalog has no listing confirming both', () => {
