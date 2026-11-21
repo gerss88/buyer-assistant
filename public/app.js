@@ -53,14 +53,14 @@ function addReplies(parent, options, mode = 'reply') {
 }
 
 function clarificationReplies(result) {
-  const fields = new Set(result.questions.map(question => question.field));
-  if (fields.has('unsupported_constraints')) return result.questions.find(question => question.field === 'unsupported_constraints')?.suggestions || [];
-  if (fields.has('budget_rub')) return [
+  const field = result.questions[0]?.field;
+  if (field === 'unsupported_constraints') return result.questions[0]?.suggestions || [];
+  if (field === 'budget_rub') return [
     { label: '10 000 ₽', value: '10 000 ₽' }, { label: '15 000 ₽', value: '15 000 ₽' },
     { label: '20 000 ₽', value: '20 000 ₽' }, { label: 'Свой бюджет', value: '', mode: 'fill' }
   ];
-  if (fields.has('city_id')) return cities.map(city => ({ label: city.name, value: city.name }));
-  if (fields.has('categories')) return categories.map(category => ({ label: category.name, value: category.name }));
+  if (field === 'city_id') return cities.map(city => ({ label: city.name, value: city.name }));
+  if (field === 'categories') return categories.map(category => ({ label: category.name, value: category.name }));
   return [];
 }
 
@@ -144,24 +144,58 @@ function showOptions(options, requirements) {
 function showNoMatchActions(requirements) {
   const row = document.createElement('div'); row.className = 'message assistant-message';
   const buttons = [
-    { label: 'Изменить бюджет', value: 'Хочу увеличить бюджет до ', mode: 'fill' },
+    { label: 'Увеличить бюджет', value: 'Хочу увеличить бюджет до ', mode: 'fill' },
     ...requirements.constraints.map(constraint => ({ label: `Ослабить: ${conditionName(constraint)}`, value: `Больше не учитывай параметр «${categoryById(constraint.category)?.attributes?.[constraint.attribute]?.name || constraint.attribute}» для категории «${categoryById(constraint.category)?.name || constraint.category}»`, mode: 'reply' })),
     { label: 'Выбрать другой город', value: 'Хочу выбрать другой город: ', mode: 'fill' }
   ];
   addReplies(row, buttons, 'reply'); $('#conversation').append(row); scrollToBottom();
 }
 
+const initialResultsEmpty = $('#resultsEmpty').innerHTML;
+
+function resetResultsEmpty() {
+  const empty = $('#resultsEmpty');
+  empty.classList.remove('no-match');
+  empty.removeAttribute('role');
+  empty.innerHTML = initialResultsEmpty;
+}
+
+function showNoMatchResult(message) {
+  const empty = $('#resultsEmpty');
+  empty.classList.add('no-match');
+  empty.setAttribute('role', 'status');
+  empty.innerHTML = '';
+  const zero = document.createElement('span'); zero.className = 'no-match-number'; zero.textContent = '0';
+  const heading = document.createElement('strong'); heading.className = 'no-match-heading'; heading.textContent = 'ПОЛНЫХ КОМПЛЕКТОВ';
+  const detail = document.createElement('p'); detail.className = 'no-match-detail'; detail.textContent = message;
+  empty.append(zero, heading, detail);
+}
+
+function selectedCityInLastReply() {
+  const lastUserText = [...history].reverse().find(message => message.role === 'user')?.text.trim().toLocaleLowerCase('ru');
+  if (!lastUserText) return false;
+  return cities.some(city => [city.name, ...(city.aliases || [])].some(alias =>
+    lastUserText.includes(alias.toLocaleLowerCase('ru'))
+  ));
+}
+
 function renderResult(result, requirements) {
   if (result.status === 'clarify') {
     $('#resultsContent').hidden = true; $('#resultsEmpty').hidden = false;
-    const text = result.questions.map(question => question.text).join('\n');
+    resetResultsEmpty();
+    const question = result.questions[0];
+    let text = question?.text || 'Уточните, пожалуйста, детали покупки.';
+    if (question?.field === 'city_id' && !requirements.city_mentioned) text = 'В каком городе искать?';
+    if (question?.field === 'budget_rub' && selectedCityInLastReply()) text = 'Отлично, город понял. Какой у вас бюджет?';
     const row = addMessage('assistant', text);
-    addReplies(row, clarificationReplies(result));
+    addReplies(row, clarificationReplies({ questions: question ? [question] : [] }));
   } else if (result.status === 'no_match') {
     $('#resultsContent').hidden = true; $('#resultsEmpty').hidden = false;
+    showNoMatchResult(result.message);
     addMessage('assistant', result.message);
     showNoMatchActions(requirements);
   } else if (result.status === 'ok') {
+    resetResultsEmpty();
     addMessage('assistant', result.options.length === 1 ? 'Нашёл подходящий вариант. Весь состав и цены — ниже.' : `Собрал ${result.options.length} подходящих комплекта. Состав и цены каждого — ниже.`);
     showOptions(result.options, requirements);
   }
@@ -241,6 +275,7 @@ $('#resultsPanel').addEventListener('click', event => {
 $('#newChat').addEventListener('click', () => {
   if (busy) return;
   history.length = 0;
+  resetResultsEmpty();
   $('#resultsContent').innerHTML = ''; $('#resultsContent').hidden = true; $('#resultsEmpty').hidden = false;
   $('#conversation').innerHTML = '<div class="welcome" id="welcome"><h1>Что подберём?</h1><p>Напишите, что нужно, в каком городе и на какую сумму. Можно обычными словами.</p><div class="suggestions" id="suggestions"><button type="button" data-reply="Стол не шире метра, кресло и лампа. Таганрог. До 15 000 ₽ за всё.">Стол, кресло и лампа · Таганрог</button><button type="button" data-reply="Диван до 50 000 ₽ в Москве">Диван · Москва</button><button type="button" data-reply="Кровать шириной от 140 см в Казани">Кровать · Казань</button></div></div>';
   $('#chatInput').value = ''; $('#chatInput').focus();

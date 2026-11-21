@@ -73,3 +73,5 @@ body:not(.dark) .snowdrift{filter:drop-shadow(0 2px 2px #54718530)}
 body:not(.dark) .snowflake-float{color:#70b4d0;opacity:.23;filter:drop-shadow(0 0 7px #7bcbe944)}
 @keyframes flake-float{0%,100%{transform:translate3d(0,0,0) rotate(0);opacity:.19}50%{transform:translate3d(0,-7px,0) rotate(18deg);opacity:.31}}
 @media(prefers-reduced-motion:reduce){.snowflake-float{animation:none}}
+
+.results-empty.no-match{gap:8px;align-content:center}.results-empty.no-match .no-match-number{font-size:clamp(108px,20vw,190px);font-weight:900;letter-spacing:-.09em;line-height:.82;color:var(--red)}.results-empty.no-match .no-match-heading{font-size:clamp(20px,3vw,34px);font-weight:900;letter-spacing:.015em;color:var(--ink)}.results-empty.no-match .no-match-detail{max-width:620px;margin:9px auto 0;color:var(--muted);font-size:14px;line-height:1.6}
