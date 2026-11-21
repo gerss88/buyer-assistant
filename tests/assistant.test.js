@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { answer, findOptions, qualifies, within, catalog, cities, categories } = require('../server');
-const { buildSchema, buildSystemPrompt, normalizeNumericEquality, validateRequirements } = require('../parse');
+const { buildSchema, buildSystemPrompt, normalizeNumericEquality, normalizePriceConstraints, validateRequirements } = require('../parse');
 
 const basic = overrides => ({
   city_id: 'taganrog', city_mentioned: null, budget_rub: 15000, category_budgets: [],
@@ -446,4 +446,39 @@ test('category budgets reject invalid, duplicate, and unrelated categories', () 
   assert.throws(() => validateRequirements({ ...valid, category_budgets: [{ category: 'table', budget_rub: -1 }] }, cities, categories), /бюджеты категорий/);
   assert.throws(() => validateRequirements({ ...valid, category_budgets: [{ category: 'table', budget_rub: 1000 }, { category: 'table', budget_rub: 2000 }] }, cities, categories), /бюджеты категорий/);
   assert.throws(() => validateRequirements({ ...valid, category_budgets: [{ category: 'lamp', budget_rub: 1000 }] }, cities, categories), /Бюджет указан/);
+});
+
+
+test('unknown price fields from the model are normalized into independent category budgets', () => {
+  const modelResponse = basic({
+    budget_rub: null,
+    categories: ['table', 'chair'],
+    constraints: [
+      condition('table', 'price_rub', 'max', 10000),
+      condition('chair', 'price', 'max', '5000')
+    ]
+  });
+  const normalized = normalizePriceConstraints(modelResponse, categories);
+  assert.deepEqual(normalized.category_budgets, [
+    { category: 'table', budget_rub: 10000 },
+    { category: 'chair', budget_rub: 5000 }
+  ]);
+  assert.deepEqual(normalized.constraints, []);
+  assert.equal(validateRequirements(normalized, cities, categories), normalized);
+});
+
+test('price caps tighten existing category budgets without swallowing real unsupported attributes', () => {
+  const modelResponse = basic({
+    budget_rub: null,
+    categories: ['table'],
+    category_budgets: [{ category: 'table', budget_rub: 12000 }],
+    constraints: [
+      condition('table', 'budget_rub', 'max', 10000),
+      condition('table', 'secret_feature', 'max', 2)
+    ]
+  });
+  const normalized = normalizePriceConstraints(modelResponse, categories);
+  assert.deepEqual(normalized.category_budgets, [{ category: 'table', budget_rub: 10000 }]);
+  assert.deepEqual(normalized.constraints, [condition('table', 'secret_feature', 'max', 2)]);
+  assert.throws(() => validateRequirements(normalized, cities, categories), /характеристику/);
 });
