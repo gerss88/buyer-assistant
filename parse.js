@@ -74,7 +74,7 @@ function normalizePriceConstraints(input, categories) {
       /^(?:price|price_rub|budget|budget_rub|cost|cost_rub|цена|стоимость|бюджет)(?:_.*)?$/i.test(constraint.attribute);
     const numericValue = typeof constraint?.value === 'number'
       ? constraint.value
-      : typeof constraint?.value === 'string' && /^\\d+(?:[.,]\\d+)?$/.test(constraint.value.trim())
+      : typeof constraint?.value === 'string' && /^\d+(?:[.,]\d+)?$/.test(constraint.value.trim())
         ? Number(constraint.value.trim().replace(',', '.'))
         : NaN;
 
