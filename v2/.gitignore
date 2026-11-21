@@ -1,9 +1,0 @@
-.env
-.env.*
-!.env.example
-**/.env
-**/.env.*
-!**/.env.example
-*.key
-__pycache__/
-.venv/
