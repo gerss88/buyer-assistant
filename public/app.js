@@ -169,9 +169,11 @@ function renderResult(result, requirements) {
 async function sendMessage(raw) {
   const text = raw.trim();
   if (!text || busy) return;
-  if (history.length >= 20) {
-    addMessage('assistant', 'В этом диалоге уже много сообщений. Начните новый, чтобы продолжить подбор.', { track: false });
-    return;
+  // API accepts up to 20 alternating messages. Keep the latest context
+  // instead of blocking the user after 20 messages.
+  while (history.length >= 20) {
+    // History is stored as user/assistant pairs; drop the oldest complete pair.
+    history.splice(0, 2);
   }
   addMessage('user', text);
   $('#chatInput').value = ''; $('#chatInput').style.height = 'auto';
