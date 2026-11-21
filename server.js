@@ -52,8 +52,10 @@ function qualifies(ad, requirements) {
 }
 
 function findOptions(requirements, sourceCatalog = catalog) {
+  const categoryBudgets = new Map((requirements.category_budgets || []).map(item => [item.category, item.budget_rub]));
+  const totalBudget = requirements.budget_rub ?? requirements.categories.reduce((sum, category) => sum + (categoryBudgets.get(category) ?? 0), 0);
   const pools = requirements.categories.map(category => sourceCatalog
-    .filter(ad => ad.category === category && qualifies(ad, requirements))
+    .filter(ad => ad.category === category && qualifies(ad, requirements) && (!categoryBudgets.has(category) || ad.price_rub <= categoryBudgets.get(category)))
     .sort((left, right) => left.price_rub - right.price_rub));
   if (pools.some(pool => pool.length === 0)) return [];
 
@@ -61,7 +63,7 @@ function findOptions(requirements, sourceCatalog = catalog) {
   for (let i = pools.length - 1; i >= 0; i--) cheapestRest[i] = cheapestRest[i + 1] + pools[i][0].price_rub;
   const results = [];
   function visit(index, picked, total) {
-    if (results.length >= 3 || total + cheapestRest[index] > requirements.budget_rub) return;
+    if (results.length >= 3 || total + cheapestRest[index] > totalBudget) return;
     if (index === pools.length) {
       results.push({ ads: picked, total });
       results.sort((left, right) => left.total - right.total);
@@ -70,7 +72,7 @@ function findOptions(requirements, sourceCatalog = catalog) {
     }
     if (results.length === 3 && total + cheapestRest[index] >= results[2].total) return;
     for (const ad of pools[index]) {
-      if (total + ad.price_rub + cheapestRest[index + 1] > requirements.budget_rub) break;
+      if (total + ad.price_rub + cheapestRest[index + 1] > totalBudget) break;
       visit(index + 1, [...picked, ad], total + ad.price_rub);
       if (results.length >= 3) break;
     }
@@ -104,7 +106,9 @@ function answer(requirements, sourceCatalog = catalog) {
       : `В каком городе будете забирать товары: ${cityNames}?`;
     missing.push({ field: 'city_id', text: ask });
   }
-  if (requirements.budget_rub === null) missing.push({ field: 'budget_rub', text: requirements.categories.length > 1 ? 'Какой бюджет рассматриваете на весь комплект?' : 'Какой бюджет рассматриваете на эту покупку?' });
+  const categoryBudgets = new Map((requirements.category_budgets || []).map(item => [item.category, item.budget_rub]));
+  const everyCategoryHasBudget = requirements.categories.length > 0 && requirements.categories.every(category => categoryBudgets.has(category));
+  if (requirements.budget_rub === null && !everyCategoryHasBudget) missing.push({ field: 'budget_rub', text: requirements.categories.length > 1 ? 'Какой общий бюджет рассматриваете на весь комплект? Отдельные лимиты по товарам я сохраню.' : 'Какой бюджет рассматриваете на эту покупку?' });
   if (requirements.unsupported_constraints?.length) {
     const details = requirements.unsupported_constraints.map(item => {
       const categoryName = categoryById[item.category]?.name || item.category;
@@ -123,11 +127,16 @@ function answer(requirements, sourceCatalog = catalog) {
 
   const options = findOptions(requirements, sourceCatalog);
   if (!options.length) {
-    const pools = requirements.categories.map(category => sourceCatalog.filter(ad => ad.category === category && qualifies(ad, requirements)));
+    const pools = requirements.categories.map(category => sourceCatalog.filter(ad => ad.category === category && qualifies(ad, requirements) && (!categoryBudgets.has(category) || ad.price_rub <= categoryBudgets.get(category))));
     const unavailable = requirements.categories.filter((category, index) => pools[index].length === 0);
     const place = cityById[requirements.city_id].name;
     const message = unavailable.length
-      ? `В ${place} не нашёл ${unavailable.map(category => categoryById[category].name.toLowerCase()).join(', ')} с такими характеристиками. Можно ослабить ограничение или выбрать другой город.`
+      ? `В ${place} не нашёл ${unavailable.map(category => {
+        const name = categoryById[category].name.toLowerCase();
+        return categoryBudgets.has(category)
+          ? `${name} в пределах ${categoryBudgets.get(category).toLocaleString('ru-RU')} ₽ с указанными характеристиками`
+          : `${name} с такими характеристиками`;
+      }).join(', ')}. Можно ослабить ограничение или выбрать другой город.`
       : `Самый недорогой полный комплект в ${place} стоит ${pools.reduce((sum, pool) => sum + Math.min(...pool.map(ad => ad.price_rub)), 0).toLocaleString('ru-RU')} ₽, это выше бюджета ${requirements.budget_rub.toLocaleString('ru-RU')} ₽.`;
     return { status: 'no_match', message };
   }

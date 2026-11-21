@@ -8,6 +8,17 @@ function buildSchema(cities, categories) {
       city_id: { type: ['string', 'null'] },
       city_mentioned: { type: ['string', 'null'] },
       budget_rub: { type: ['integer', 'null'], minimum: 0 },
+      category_budgets: {
+        type: 'array', maxItems: 24,
+        items: {
+          type: 'object', additionalProperties: false,
+          properties: {
+            category: { type: 'string' },
+            budget_rub: { type: 'integer', minimum: 0 }
+          },
+          required: ['category', 'budget_rub']
+        }
+      },
       categories: { type: 'array', items: { type: 'string' } },
       unsupported_categories: { type: 'array', items: { type: 'string' } },
       unsupported_constraints: {
@@ -36,7 +47,7 @@ function buildSchema(cities, categories) {
         }
       }
     },
-    required: ['city_id', 'city_mentioned', 'budget_rub', 'categories', 'unsupported_categories', 'unsupported_constraints', 'constraints']
+    required: ['city_id', 'city_mentioned', 'budget_rub', 'category_budgets', 'categories', 'unsupported_categories', 'unsupported_constraints', 'constraints']
   };
 }
 
@@ -47,7 +58,7 @@ function buildSystemPrompt(cities, categories) {
 Справочник городов и вариантов написания: ${JSON.stringify(cityHints)}
 Категории, синонимы и типы характеристик: ${JSON.stringify(categoryHints)}
 Извлекай ровно названные категории. Если категория не представлена в справочнике, не подменяй её похожей: добавь исходное название в unsupported_categories. Если город не найден в справочнике, верни city_id=null и переданное название в city_mentioned. Не подставляй город или бюджет по умолчанию. Если покупатель просит характеристику товара, которой НЕТ в attributes этой категории, ОБЯЗАТЕЛЬНО добавь её в unsupported_constraints с category, понятным названием attribute_name и кратким requested_value. Никогда не пропускай такое условие и не подменяй его похожим. В constraints помещай только характеристики, реально присутствующие в справочнике. Если характеристика есть в справочнике, но её значение отсутствует в объявлении, такое объявление не подходит. При явной отмене ограничения удали его также из unsupported_constraints.
-Бюджет — целое число рублей за весь комплект. Разговорные суммы преобразуй точно: «15 тысяч», «15 тыс.», «15к» = 15000; «полторы тысячи» = 1500; «1,5 млн» = 1500000. Не угадывай неясные суммы.
+БЮДЖЕТЫ — ВАЖНО: budget_rub означает общий лимит на весь комплект. category_budgets — отдельные максимальные лимиты цены для конкретных категорий. Например, «стол до 10 000 ₽, кресло до 5 000 ₽» → budget_rub=null, category_budgets=[{category: table, budget_rub: 10000}, {category: chair, budget_rub: 5000}]. Не превращай бюджеты категорий в constraints/характеристики товара. Не записывай отдельный лимит категории в общий budget_rub. Если покупатель указал общий и отдельные лимиты, верни оба. Если лимит категории изменён, обнови только его; остальные лимиты той же задачи сохрани. Если покупатель начал новую задачу, сбрось и общий, и отдельные бюджеты. Все суммы — целые числа рублей. Разговорные суммы преобразуй точно: «15 тысяч», «15 тыс.», «15к» = 15000; «полторы тысячи» = 1500; «1,5 млн» = 1500000. Не угадывай неясные суммы.
 Для каждого ограничения товара создай элемент constraints с category и точным ключом attribute из справочника. Приводи числовое значение к unit этого атрибута: если каталог хранит сантиметры, метр умножь на 100; если хранит литры, миллилитры раздели на 1000. Значение размера без слов сравнения означает exact: «стол шириной 90 сантиметров» → категория table, attribute width_cm, operator exact, value 90 (если unit атрибута — см). «до», «не более», «не выше», «не шире», «не дальше» означают включительный max; «меньше», «уже», «ниже» означают строгий max_exclusive; «от», «не менее», «не ниже» — включительный min; «больше», «шире», «выше» — строгий min_exclusive; «ровно», «точно» — exact. Для числовых атрибутов всегда возвращай числовое value и используй только числовые операторы min, max, exact, min_exclusive, max_exclusive. «От A до B» — две границы min и max. Для булевых и строковых характеристик используй eq. Для строковых характеристик, у которых в справочнике указаны values, используй только одно из этих канонических значений. Не создавай ограничение по догадке или по словам из объявления.`;
 }
 
@@ -80,7 +91,14 @@ function validateRequirements(input, cities, categories) {
   if (input.city_id !== null && (typeof input.city_id !== 'string' || !cityIds.has(input.city_id))) throw new Error('Модель вернула неизвестный город.');
   if (input.city_mentioned !== null && typeof input.city_mentioned !== 'string') throw new Error('Модель вернула некорректное название города.');
   if (input.budget_rub !== null && (!Number.isSafeInteger(input.budget_rub) || input.budget_rub < 0)) throw new Error('Модель вернула некорректный бюджет.');
+  if (!Array.isArray(input.category_budgets) || input.category_budgets.length > 24 || input.category_budgets.some(item =>
+    !item || typeof item.category !== 'string' || !categoryById.has(item.category) ||
+    !Number.isSafeInteger(item.budget_rub) || item.budget_rub < 0
+  ) || new Set(input.category_budgets.map(item => item.category)).size !== input.category_budgets.length) {
+    throw new Error('Модель вернула некорректные бюджеты категорий.');
+  }
   if (!Array.isArray(input.categories) || input.categories.some(id => !categoryById.has(id)) || new Set(input.categories).size !== input.categories.length) throw new Error('Модель вернула некорректные категории.');
+  if (input.category_budgets.some(item => !input.categories.includes(item.category))) throw new Error('Бюджет указан для категории, которой нет в запросе.');
   if (!Array.isArray(input.unsupported_categories) || input.unsupported_categories.some(value => typeof value !== 'string')) throw new Error('Модель вернула некорректные неподдерживаемые категории.');
   if (!Array.isArray(input.unsupported_constraints) || input.unsupported_constraints.length > 24 || input.unsupported_constraints.some(item =>
     !item || !categoryById.has(item.category) || typeof item.attribute_name !== 'string' || !item.attribute_name.trim() ||
