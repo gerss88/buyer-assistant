@@ -1,0 +1,172 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('node:fs');
+const path = require('node:path');
+const { answer, categories, cities } = require('./server');
+const { parseConversation } = require('./parse');
+
+class CliError extends Error {
+  constructor(message, exitCode = 2) {
+    super(message);
+    this.exitCode = exitCode;
+  }
+}
+
+function parseArguments(args) {
+  if (args.length !== 2 || args[0] !== '--catalog' || !args[1]) {
+    throw new CliError('Использование: ./run --catalog /путь/к/catalog.json');
+  }
+  return path.resolve(process.cwd(), args[1]);
+}
+
+function hasOnlyKeys(value, allowedKeys) {
+  return Object.keys(value).every(key => allowedKeys.includes(key));
+}
+
+function validateRequest(request) {
+  if (!request || typeof request !== 'object' || Array.isArray(request) ||
+      !hasOnlyKeys(request, ['messages']) || !Array.isArray(request.messages) ||
+      request.messages.length < 1 || request.messages.length > 20) {
+    throw new CliError('Запрос должен содержать только массив messages из 1–20 сообщений.');
+  }
+
+  for (let index = 0; index < request.messages.length; index++) {
+    const message = request.messages[index];
+    if (!message || typeof message !== 'object' || Array.isArray(message) ||
+        !hasOnlyKeys(message, ['role', 'text']) ||
+        !['user', 'assistant'].includes(message.role) ||
+        typeof message.text !== 'string' || !message.text.trim()) {
+      throw new CliError(`Некорректное сообщение в messages[${index}].`);
+    }
+    if (index > 0 && request.messages[index - 1].role === message.role) {
+      throw new CliError('Роли сообщений должны чередоваться user и assistant.');
+    }
+  }
+
+  if (request.messages[0].role !== 'user' || request.messages.at(-1).role !== 'user') {
+    throw new CliError('Первое и последнее сообщения должны иметь роль user.');
+  }
+}
+
+function loadCatalog(catalogPath) {
+  let catalog;
+  try {
+    catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+  } catch (error) {
+    throw new CliError(`Не удалось прочитать каталог: ${error.message}`);
+  }
+
+  if (!Array.isArray(catalog) || catalog.length > 250) {
+    throw new CliError('Каталог должен быть JSON-массивом не более чем из 250 объявлений.');
+  }
+
+  const categoryIds = new Set(categories.map(category => category.id));
+  const cityIds = new Set(cities.map(city => city.id));
+  const listingIds = new Set();
+  const listingKeys = ['id', 'category', 'title', 'description', 'price_rub', 'city_id', 'attributes'];
+
+  for (let index = 0; index < catalog.length; index++) {
+    const listing = catalog[index];
+    if (!listing || typeof listing !== 'object' || Array.isArray(listing) ||
+        !hasOnlyKeys(listing, listingKeys) || listingKeys.some(key => !Object.hasOwn(listing, key))) {
+      throw new CliError(`Некорректная структура объявления catalog[${index}].`);
+    }
+    if (typeof listing.id !== 'string' || !listing.id.trim() || listingIds.has(listing.id)) {
+      throw new CliError(`ID объявления catalog[${index}] пустой или повторяется.`);
+    }
+    if (!categoryIds.has(listing.category) || !cityIds.has(listing.city_id)) {
+      throw new CliError(`Неизвестная категория или город в catalog[${index}].`);
+    }
+    if (typeof listing.title !== 'string' || !listing.title.trim() ||
+        typeof listing.description !== 'string' ||
+        !Number.isSafeInteger(listing.price_rub) || listing.price_rub <= 0) {
+      throw new CliError(`Некорректные название, описание или цена в catalog[${index}].`);
+    }
+    if (!listing.attributes || typeof listing.attributes !== 'object' || Array.isArray(listing.attributes)) {
+      throw new CliError(`Поле attributes в catalog[${index}] должно быть объектом.`);
+    }
+    for (const value of Object.values(listing.attributes)) {
+      if (value === null || !['string', 'number', 'boolean'].includes(typeof value) ||
+          (typeof value === 'number' && !Number.isFinite(value))) {
+        throw new CliError(`Некорректное значение характеристики в catalog[${index}].`);
+      }
+    }
+    listingIds.add(listing.id);
+  }
+
+  return catalog;
+}
+
+function contractResponse(response) {
+  if (response?.status === 'ok' && Array.isArray(response.options) && response.options.length > 0) {
+    return {
+      status: 'ok',
+      options: response.options.map(option => ({
+        listing_ids: option.listing_ids,
+        total_rub: option.total_rub,
+        explanation: option.explanation
+      }))
+    };
+  }
+
+  if (response?.status === 'no_match' && typeof response.message === 'string' && response.message.trim()) {
+    return { status: 'no_match', message: response.message };
+  }
+
+  if (response?.status === 'clarify' && Array.isArray(response.questions)) {
+    const allowedFields = new Set(['budget_rub', 'city_id', 'categories']);
+    const questions = response.questions.filter(question => allowedFields.has(question.field));
+    const unsupportedDetails = response.questions
+      .filter(question => !allowedFields.has(question.field))
+      .map(question => question.text)
+      .filter(Boolean);
+
+    if (unsupportedDetails.length) {
+      const detail = unsupportedDetails.join(' ');
+      if (questions.length) {
+        questions[0] = { ...questions[0], text: `${questions[0].text} ${detail}` };
+      } else {
+        questions.push({
+          field: 'categories',
+          text: `${detail} Уточните категорию или переформулируйте требование с характеристикой из каталога.`
+        });
+      }
+    }
+
+    if (questions.length) return { status: 'clarify', questions: questions.slice(0, 3) };
+  }
+
+  throw new Error('Решатель вернул ответ, не соответствующий CLI-контракту.');
+}
+
+async function main() {
+  const catalogPath = parseArguments(process.argv.slice(2));
+  const input = fs.readFileSync(0, 'utf8');
+  let request;
+  try {
+    request = JSON.parse(input);
+  } catch (error) {
+    throw new CliError(`Некорректный JSON во входном потоке: ${error.message}`);
+  }
+
+  validateRequest(request);
+  const catalog = loadCatalog(catalogPath);
+  const requirements = await parseConversation(request.messages, {
+    cities,
+    categories,
+    baseUrl: process.env.LLM_BASE_URL,
+    model: process.env.LLM_MODEL,
+    apiKey: process.env.LLM_API_KEY,
+    userAgent: process.env.LLM_USER_AGENT
+  });
+  const response = contractResponse(answer(requirements, catalog));
+
+  process.stdout.write(`${JSON.stringify(response)}\n`);
+}
+
+main().catch(error => {
+  const message = String(error?.message || error).replace(/[\r\n]+/g, ' ');
+  process.stderr.write(`${message}\n`);
+  process.exitCode = error instanceof CliError ? error.exitCode : 1;
+});
