@@ -58,8 +58,47 @@ function buildSystemPrompt(cities, categories) {
 Справочник городов и вариантов написания: ${JSON.stringify(cityHints)}
 Категории, синонимы и типы характеристик: ${JSON.stringify(categoryHints)}
 Извлекай ровно названные категории. Если категория не представлена в справочнике, не подменяй её похожей: добавь исходное название в unsupported_categories. Если город не найден в справочнике, верни city_id=null и переданное название в city_mentioned. Не подставляй город или бюджет по умолчанию. Если покупатель просит характеристику товара, которой НЕТ в attributes этой категории, ОБЯЗАТЕЛЬНО добавь её в unsupported_constraints с category, понятным названием attribute_name и кратким requested_value. Никогда не пропускай такое условие и не подменяй его похожим. В constraints помещай только характеристики, реально присутствующие в справочнике. Если характеристика есть в справочнике, но её значение отсутствует в объявлении, такое объявление не подходит. При явной отмене ограничения удали его также из unsupported_constraints.
-БЮДЖЕТЫ — ВАЖНО: budget_rub означает общий лимит на весь комплект. category_budgets — отдельные максимальные лимиты цены для конкретных категорий. Например, «стол до 10 000 ₽, кресло до 5 000 ₽» → budget_rub=null, category_budgets=[{category: table, budget_rub: 10000}, {category: chair, budget_rub: 5000}]. Не превращай бюджеты категорий в constraints/характеристики товара. Не записывай отдельный лимит категории в общий budget_rub. Если покупатель указал общий и отдельные лимиты, верни оба. Если лимит категории изменён, обнови только его; остальные лимиты той же задачи сохрани. Если покупатель начал новую задачу, сбрось и общий, и отдельные бюджеты. Все суммы — целые числа рублей. Разговорные суммы преобразуй точно: «15 тысяч», «15 тыс.», «15к» = 15000; «полторы тысячи» = 1500; «1,5 млн» = 1500000. Не угадывай неясные суммы.
+БЮДЖЕТЫ — ВАЖНО: budget_rub означает общий лимит на весь комплект. category_budgets — отдельные максимальные лимиты цены для конкретных категорий. Например, «стол до 10 000 ₽, кресло до 5 000 ₽» → budget_rub=null, category_budgets=[{category: table, budget_rub: 10000}, {category: chair, budget_rub: 5000}]. Цена объявления — отдельное поле, а не характеристика товара: никогда не помещай цену, стоимость или бюджет в constraints или unsupported_constraints. Все верхние ценовые лимиты по категориям помещай только в category_budgets. Не превращай бюджеты категорий в constraints/характеристики товара. Не записывай отдельный лимит категории в общий budget_rub. Если покупатель указал общий и отдельные лимиты, верни оба. Если лимит категории изменён, обнови только его; остальные лимиты той же задачи сохрани. Если покупатель начал новую задачу, сбрось и общий, и отдельные бюджеты. Все суммы — целые числа рублей. Разговорные суммы преобразуй точно: «15 тысяч», «15 тыс.», «15к» = 15000; «полторы тысячи» = 1500; «1,5 млн» = 1500000. Не угадывай неясные суммы.
 Для каждого ограничения товара создай элемент constraints с category и точным ключом attribute из справочника. Приводи числовое значение к unit этого атрибута: если каталог хранит сантиметры, метр умножь на 100; если хранит литры, миллилитры раздели на 1000. Значение размера без слов сравнения означает exact: «стол шириной 90 сантиметров» → категория table, attribute width_cm, operator exact, value 90 (если unit атрибута — см). «до», «не более», «не выше», «не шире», «не дальше» означают включительный max; «меньше», «уже», «ниже» означают строгий max_exclusive; «от», «не менее», «не ниже» — включительный min; «больше», «шире», «выше» — строгий min_exclusive; «ровно», «точно» — exact. Для числовых атрибутов всегда возвращай числовое value и используй только числовые операторы min, max, exact, min_exclusive, max_exclusive. «От A до B» — две границы min и max. Для булевых и строковых характеристик используй eq. Для строковых характеристик, у которых в справочнике указаны values, используй только одно из этих канонических значений. Не создавай ограничение по догадке или по словам из объявления.`;
+}
+
+function normalizePriceConstraints(input, categories) {
+  const categoryById = new Map(categories.map(category => [category.id, category]));
+  const categoryBudgets = new Map((Array.isArray(input.category_budgets) ? input.category_budgets : [])
+    .map(item => [item.category, item.budget_rub]));
+  const remainingConstraints = [];
+
+  for (const constraint of Array.isArray(input.constraints) ? input.constraints : []) {
+    const definition = categoryById.get(constraint?.category)?.attributes?.[constraint?.attribute];
+    const isPriceField = typeof constraint?.attribute === 'string' &&
+      /^(?:price|price_rub|budget|budget_rub|cost|cost_rub|цена|стоимость|бюджет)(?:_.*)?$/i.test(constraint.attribute);
+    const numericValue = typeof constraint?.value === 'number'
+      ? constraint.value
+      : typeof constraint?.value === 'string' && /^\\d+(?:[.,]\\d+)?$/.test(constraint.value.trim())
+        ? Number(constraint.value.trim().replace(',', '.'))
+        : NaN;
+
+    // Price is a listing field, not a product attribute. Convert only an
+    // explicit upper price bound; keep every other unknown attribute strict.
+    if (!definition && isPriceField &&
+        ['max', 'max_exclusive'].includes(constraint.operator) &&
+        Number.isSafeInteger(numericValue) && numericValue >= 0 &&
+        categoryById.has(constraint.category)) {
+      const previous = categoryBudgets.get(constraint.category);
+      categoryBudgets.set(
+        constraint.category,
+        previous === undefined ? numericValue : Math.min(previous, numericValue)
+      );
+      continue;
+    }
+    remainingConstraints.push(constraint);
+  }
+
+  return {
+    ...input,
+    category_budgets: [...categoryBudgets].map(([category, budget_rub]) => ({ category, budget_rub })),
+    constraints: remainingConstraints
+  };
 }
 
 function normalizeNumericEquality(input, categories) {
@@ -149,7 +188,7 @@ async function parseConversation(messages, { cities, categories, baseUrl, model,
   if (!response.ok) throw new Error(data?.error?.message || `Ошибка API модели (${response.status}).`);
   const content = data?.choices?.[0]?.message?.content;
   if (!content) throw new Error('Модель вернула пустой ответ.');
-  return validateRequirements(normalizeNumericEquality(JSON.parse(content), categories), cities, categories);
+  return validateRequirements(normalizeNumericEquality(normalizePriceConstraints(JSON.parse(content), categories), categories), cities, categories);
 }
 
-module.exports = { ATTRIBUTE_OPERATORS, buildSchema, buildSystemPrompt, normalizeNumericEquality, parseConversation, validateRequirements };
+module.exports = { ATTRIBUTE_OPERATORS, buildSchema, buildSystemPrompt, normalizeNumericEquality, normalizePriceConstraints, parseConversation, validateRequirements };
