@@ -1165,5 +1165,1656 @@
     "attributes": {
       "color_temperature_k": 3000
     }
+  },
+  {
+    "id": "extension-moscow-table-01",
+    "category": "table",
+    "title": "Письменный стол",
+    "description": "Лаконичный письменный стол, состояние хорошее.",
+    "price_rub": 5800,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 80
+    }
+  },
+  {
+    "id": "extension-moscow-table-02",
+    "category": "table",
+    "title": "Рабочий стол",
+    "description": "Прочный рабочий стол для дома.",
+    "price_rub": 7700,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 100
+    }
+  },
+  {
+    "id": "extension-moscow-table-03",
+    "category": "table",
+    "title": "Стол для кабинета",
+    "description": "Вместительный стол, можно осмотреть при встрече.",
+    "price_rub": 9000,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 120
+    }
+  },
+  {
+    "id": "extension-moscow-table-04",
+    "category": "table",
+    "title": "Стол после переезда",
+    "description": "Стол после переезда. Точный размер не измеряли.",
+    "price_rub": 4400,
+    "city_id": "moscow",
+    "attributes": {}
+  },
+  {
+    "id": "extension-moscow-chair-05",
+    "category": "chair",
+    "title": "Кресло с регулировкой",
+    "description": "Рабочее кресло, высота регулируется.",
+    "price_rub": 6200,
+    "city_id": "moscow",
+    "attributes": {
+      "adjustable_height": true
+    }
+  },
+  {
+    "id": "extension-moscow-chair-06",
+    "category": "chair",
+    "title": "Простое кресло",
+    "description": "Устойчивое кресло без регулировки высоты.",
+    "price_rub": 3800,
+    "city_id": "moscow",
+    "attributes": {
+      "adjustable_height": false
+    }
+  },
+  {
+    "id": "extension-moscow-chair-07",
+    "category": "chair",
+    "title": "Компьютерное кресло",
+    "description": "Кресло для рабочего места, высота меняется.",
+    "price_rub": 8300,
+    "city_id": "moscow",
+    "attributes": {
+      "adjustable_height": true
+    }
+  },
+  {
+    "id": "extension-moscow-chair-08",
+    "category": "chair",
+    "title": "Кресло для комнаты",
+    "description": "Удобное кресло, механизм не проверяли.",
+    "price_rub": 2700,
+    "city_id": "moscow",
+    "attributes": {}
+  },
+  {
+    "id": "extension-moscow-lamp-09",
+    "category": "lamp",
+    "title": "Настольная лампа",
+    "description": "Лампа для рабочего стола, свет 4000 К.",
+    "price_rub": 1800,
+    "city_id": "moscow",
+    "attributes": {
+      "color_temperature_k": 4000
+    }
+  },
+  {
+    "id": "extension-moscow-lamp-10",
+    "category": "lamp",
+    "title": "Лампа тёплого света",
+    "description": "Компактная лампа с тёплым светом.",
+    "price_rub": 1300,
+    "city_id": "moscow",
+    "attributes": {
+      "color_temperature_k": 3000
+    }
+  },
+  {
+    "id": "extension-moscow-lamp-11",
+    "category": "lamp",
+    "title": "Яркая настольная лампа",
+    "description": "Светильник с холодным светом 6500 К.",
+    "price_rub": 2200,
+    "city_id": "moscow",
+    "attributes": {
+      "color_temperature_k": 6500
+    }
+  },
+  {
+    "id": "extension-moscow-lamp-12",
+    "category": "lamp",
+    "title": "Лампа для дома",
+    "description": "Рабочая лампа, температура света не указана.",
+    "price_rub": 1000,
+    "city_id": "moscow",
+    "attributes": {}
+  },
+  {
+    "id": "extension-saint-petersburg-table-01",
+    "category": "table",
+    "title": "Письменный стол",
+    "description": "Лаконичный письменный стол, состояние хорошее.",
+    "price_rub": 5100,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 80
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-table-02",
+    "category": "table",
+    "title": "Рабочий стол",
+    "description": "Прочный рабочий стол для дома.",
+    "price_rub": 6900,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 100
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-table-03",
+    "category": "table",
+    "title": "Стол для кабинета",
+    "description": "Вместительный стол, можно осмотреть при встрече.",
+    "price_rub": 8100,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 120
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-table-04",
+    "category": "table",
+    "title": "Стол после переезда",
+    "description": "Стол после переезда. Точный размер не измеряли.",
+    "price_rub": 4000,
+    "city_id": "saint-petersburg",
+    "attributes": {}
+  },
+  {
+    "id": "extension-saint-petersburg-chair-05",
+    "category": "chair",
+    "title": "Кресло с регулировкой",
+    "description": "Рабочее кресло, высота регулируется.",
+    "price_rub": 5500,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "adjustable_height": true
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-chair-06",
+    "category": "chair",
+    "title": "Простое кресло",
+    "description": "Устойчивое кресло без регулировки высоты.",
+    "price_rub": 3400,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "adjustable_height": false
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-chair-07",
+    "category": "chair",
+    "title": "Компьютерное кресло",
+    "description": "Кресло для рабочего места, высота меняется.",
+    "price_rub": 7400,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "adjustable_height": true
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-chair-08",
+    "category": "chair",
+    "title": "Кресло для комнаты",
+    "description": "Удобное кресло, механизм не проверяли.",
+    "price_rub": 2400,
+    "city_id": "saint-petersburg",
+    "attributes": {}
+  },
+  {
+    "id": "extension-saint-petersburg-lamp-09",
+    "category": "lamp",
+    "title": "Настольная лампа",
+    "description": "Лампа для рабочего стола, свет 4000 К.",
+    "price_rub": 1600,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "color_temperature_k": 4000
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-lamp-10",
+    "category": "lamp",
+    "title": "Лампа тёплого света",
+    "description": "Компактная лампа с тёплым светом.",
+    "price_rub": 1200,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "color_temperature_k": 3000
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-lamp-11",
+    "category": "lamp",
+    "title": "Яркая настольная лампа",
+    "description": "Светильник с холодным светом 6500 К.",
+    "price_rub": 2000,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "color_temperature_k": 6500
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-lamp-12",
+    "category": "lamp",
+    "title": "Лампа для дома",
+    "description": "Рабочая лампа, температура света не указана.",
+    "price_rub": 900,
+    "city_id": "saint-petersburg",
+    "attributes": {}
+  },
+  {
+    "id": "extension-kazan-table-01",
+    "category": "table",
+    "title": "Письменный стол",
+    "description": "Лаконичный письменный стол, состояние хорошее.",
+    "price_rub": 4200,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 80
+    }
+  },
+  {
+    "id": "extension-kazan-table-02",
+    "category": "table",
+    "title": "Рабочий стол",
+    "description": "Прочный рабочий стол для дома.",
+    "price_rub": 5600,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 100
+    }
+  },
+  {
+    "id": "extension-kazan-table-03",
+    "category": "table",
+    "title": "Стол для кабинета",
+    "description": "Вместительный стол, можно осмотреть при встрече.",
+    "price_rub": 6600,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 120
+    }
+  },
+  {
+    "id": "extension-kazan-table-04",
+    "category": "table",
+    "title": "Стол после переезда",
+    "description": "Стол после переезда. Точный размер не измеряли.",
+    "price_rub": 3200,
+    "city_id": "kazan",
+    "attributes": {}
+  },
+  {
+    "id": "extension-kazan-chair-05",
+    "category": "chair",
+    "title": "Кресло с регулировкой",
+    "description": "Рабочее кресло, высота регулируется.",
+    "price_rub": 4500,
+    "city_id": "kazan",
+    "attributes": {
+      "adjustable_height": true
+    }
+  },
+  {
+    "id": "extension-kazan-chair-06",
+    "category": "chair",
+    "title": "Простое кресло",
+    "description": "Устойчивое кресло без регулировки высоты.",
+    "price_rub": 2800,
+    "city_id": "kazan",
+    "attributes": {
+      "adjustable_height": false
+    }
+  },
+  {
+    "id": "extension-kazan-chair-07",
+    "category": "chair",
+    "title": "Компьютерное кресло",
+    "description": "Кресло для рабочего места, высота меняется.",
+    "price_rub": 6000,
+    "city_id": "kazan",
+    "attributes": {
+      "adjustable_height": true
+    }
+  },
+  {
+    "id": "extension-kazan-chair-08",
+    "category": "chair",
+    "title": "Кресло для комнаты",
+    "description": "Удобное кресло, механизм не проверяли.",
+    "price_rub": 1900,
+    "city_id": "kazan",
+    "attributes": {}
+  },
+  {
+    "id": "extension-kazan-lamp-09",
+    "category": "lamp",
+    "title": "Настольная лампа",
+    "description": "Лампа для рабочего стола, свет 4000 К.",
+    "price_rub": 1300,
+    "city_id": "kazan",
+    "attributes": {
+      "color_temperature_k": 4000
+    }
+  },
+  {
+    "id": "extension-kazan-lamp-10",
+    "category": "lamp",
+    "title": "Лампа тёплого света",
+    "description": "Компактная лампа с тёплым светом.",
+    "price_rub": 1000,
+    "city_id": "kazan",
+    "attributes": {
+      "color_temperature_k": 3000
+    }
+  },
+  {
+    "id": "extension-kazan-lamp-11",
+    "category": "lamp",
+    "title": "Яркая настольная лампа",
+    "description": "Светильник с холодным светом 6500 К.",
+    "price_rub": 1600,
+    "city_id": "kazan",
+    "attributes": {
+      "color_temperature_k": 6500
+    }
+  },
+  {
+    "id": "extension-kazan-lamp-12",
+    "category": "lamp",
+    "title": "Лампа для дома",
+    "description": "Рабочая лампа, температура света не указана.",
+    "price_rub": 800,
+    "city_id": "kazan",
+    "attributes": {}
+  },
+  {
+    "id": "extension-taganrog-sofa-01",
+    "category": "sofa",
+    "title": "Диван-кровать компактный",
+    "description": "Диван раскладывается, два посадочных места.",
+    "price_rub": 28000,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 160,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-taganrog-sofa-02",
+    "category": "sofa",
+    "title": "Трёхместный диван",
+    "description": "Трёхместный диван, механизм раскладывания исправен.",
+    "price_rub": 48000,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 210,
+      "seats": 3,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-taganrog-sofa-03",
+    "category": "sofa",
+    "title": "Прямой диван",
+    "description": "Прямой диван на два места, не раскладывается.",
+    "price_rub": 35000,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 180,
+      "seats": 2,
+      "sleeping_function": false
+    }
+  },
+  {
+    "id": "extension-taganrog-bed-01",
+    "category": "bed",
+    "title": "Односпальная кровать",
+    "description": "Кровать шириной 90 см, без ящиков.",
+    "price_rub": 16000,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 90,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-taganrog-bed-02",
+    "category": "bed",
+    "title": "Кровать с ящиками",
+    "description": "Двуспальная кровать, есть ящики для хранения.",
+    "price_rub": 34000,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 160,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-taganrog-bed-03",
+    "category": "bed",
+    "title": "Кровать двуспальная",
+    "description": "Двуспальная кровать без встроенного хранения.",
+    "price_rub": 26000,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 140,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-taganrog-wardrobe-01",
+    "category": "wardrobe",
+    "title": "Шкаф двухдверный",
+    "description": "Двухдверный шкаф для спальни.",
+    "price_rub": 17000,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 80,
+      "height_cm": 180,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-taganrog-wardrobe-02",
+    "category": "wardrobe",
+    "title": "Шкаф для одежды",
+    "description": "Высокий шкаф с тремя дверями.",
+    "price_rub": 33000,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 120,
+      "height_cm": 210,
+      "door_count": 3
+    }
+  },
+  {
+    "id": "extension-taganrog-wardrobe-03",
+    "category": "wardrobe",
+    "title": "Компактный шкаф",
+    "description": "Компактный шкаф, две двери.",
+    "price_rub": 23000,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 100,
+      "height_cm": 190,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-taganrog-refrigerator-01",
+    "category": "refrigerator",
+    "title": "Компактный холодильник",
+    "description": "Холодильник объёмом 120 л, без No Frost.",
+    "price_rub": 21000,
+    "city_id": "taganrog",
+    "attributes": {
+      "volume_l": 120,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-taganrog-refrigerator-02",
+    "category": "refrigerator",
+    "title": "Холодильник No Frost",
+    "description": "Холодильник 250 л с системой No Frost.",
+    "price_rub": 49000,
+    "city_id": "taganrog",
+    "attributes": {
+      "volume_l": 250,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-taganrog-refrigerator-03",
+    "category": "refrigerator",
+    "title": "Холодильник для кухни",
+    "description": "Вместительный холодильник, объём 180 л.",
+    "price_rub": 35000,
+    "city_id": "taganrog",
+    "attributes": {
+      "volume_l": 180,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-sofa-01",
+    "category": "sofa",
+    "title": "Диван-кровать компактный",
+    "description": "Диван раскладывается, два посадочных места.",
+    "price_rub": 31400,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 160,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-sofa-02",
+    "category": "sofa",
+    "title": "Трёхместный диван",
+    "description": "Трёхместный диван, механизм раскладывания исправен.",
+    "price_rub": 53800,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 210,
+      "seats": 3,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-sofa-03",
+    "category": "sofa",
+    "title": "Прямой диван",
+    "description": "Прямой диван на два места, не раскладывается.",
+    "price_rub": 39200,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 180,
+      "seats": 2,
+      "sleeping_function": false
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-bed-01",
+    "category": "bed",
+    "title": "Односпальная кровать",
+    "description": "Кровать шириной 90 см, без ящиков.",
+    "price_rub": 17900,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 90,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-bed-02",
+    "category": "bed",
+    "title": "Кровать с ящиками",
+    "description": "Двуспальная кровать, есть ящики для хранения.",
+    "price_rub": 38100,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 160,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-bed-03",
+    "category": "bed",
+    "title": "Кровать двуспальная",
+    "description": "Двуспальная кровать без встроенного хранения.",
+    "price_rub": 29100,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 140,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-wardrobe-01",
+    "category": "wardrobe",
+    "title": "Шкаф двухдверный",
+    "description": "Двухдверный шкаф для спальни.",
+    "price_rub": 19000,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 80,
+      "height_cm": 180,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-wardrobe-02",
+    "category": "wardrobe",
+    "title": "Шкаф для одежды",
+    "description": "Высокий шкаф с тремя дверями.",
+    "price_rub": 37000,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 120,
+      "height_cm": 210,
+      "door_count": 3
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-wardrobe-03",
+    "category": "wardrobe",
+    "title": "Компактный шкаф",
+    "description": "Компактный шкаф, две двери.",
+    "price_rub": 25800,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 100,
+      "height_cm": 190,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-refrigerator-01",
+    "category": "refrigerator",
+    "title": "Компактный холодильник",
+    "description": "Холодильник объёмом 120 л, без No Frost.",
+    "price_rub": 23500,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "volume_l": 120,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-refrigerator-02",
+    "category": "refrigerator",
+    "title": "Холодильник No Frost",
+    "description": "Холодильник 250 л с системой No Frost.",
+    "price_rub": 54900,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "volume_l": 250,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-refrigerator-03",
+    "category": "refrigerator",
+    "title": "Холодильник для кухни",
+    "description": "Вместительный холодильник, объём 180 л.",
+    "price_rub": 39200,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "volume_l": 180,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-azov-sofa-01",
+    "category": "sofa",
+    "title": "Диван-кровать компактный",
+    "description": "Диван раскладывается, два посадочных места.",
+    "price_rub": 26600,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 160,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-azov-sofa-02",
+    "category": "sofa",
+    "title": "Трёхместный диван",
+    "description": "Трёхместный диван, механизм раскладывания исправен.",
+    "price_rub": 45600,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 210,
+      "seats": 3,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-azov-sofa-03",
+    "category": "sofa",
+    "title": "Прямой диван",
+    "description": "Прямой диван на два места, не раскладывается.",
+    "price_rub": 33300,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 180,
+      "seats": 2,
+      "sleeping_function": false
+    }
+  },
+  {
+    "id": "extension-azov-bed-01",
+    "category": "bed",
+    "title": "Односпальная кровать",
+    "description": "Кровать шириной 90 см, без ящиков.",
+    "price_rub": 15200,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 90,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-azov-bed-02",
+    "category": "bed",
+    "title": "Кровать с ящиками",
+    "description": "Двуспальная кровать, есть ящики для хранения.",
+    "price_rub": 32300,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 160,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-azov-bed-03",
+    "category": "bed",
+    "title": "Кровать двуспальная",
+    "description": "Двуспальная кровать без встроенного хранения.",
+    "price_rub": 24700,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 140,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-azov-wardrobe-01",
+    "category": "wardrobe",
+    "title": "Шкаф двухдверный",
+    "description": "Двухдверный шкаф для спальни.",
+    "price_rub": 16200,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 80,
+      "height_cm": 180,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-azov-wardrobe-02",
+    "category": "wardrobe",
+    "title": "Шкаф для одежды",
+    "description": "Высокий шкаф с тремя дверями.",
+    "price_rub": 31400,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 120,
+      "height_cm": 210,
+      "door_count": 3
+    }
+  },
+  {
+    "id": "extension-azov-wardrobe-03",
+    "category": "wardrobe",
+    "title": "Компактный шкаф",
+    "description": "Компактный шкаф, две двери.",
+    "price_rub": 21900,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 100,
+      "height_cm": 190,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-azov-refrigerator-01",
+    "category": "refrigerator",
+    "title": "Компактный холодильник",
+    "description": "Холодильник объёмом 120 л, без No Frost.",
+    "price_rub": 20000,
+    "city_id": "azov",
+    "attributes": {
+      "volume_l": 120,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-azov-refrigerator-02",
+    "category": "refrigerator",
+    "title": "Холодильник No Frost",
+    "description": "Холодильник 250 л с системой No Frost.",
+    "price_rub": 46600,
+    "city_id": "azov",
+    "attributes": {
+      "volume_l": 250,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-azov-refrigerator-03",
+    "category": "refrigerator",
+    "title": "Холодильник для кухни",
+    "description": "Вместительный холодильник, объём 180 л.",
+    "price_rub": 33300,
+    "city_id": "azov",
+    "attributes": {
+      "volume_l": 180,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-moscow-sofa-01",
+    "category": "sofa",
+    "title": "Диван-кровать компактный",
+    "description": "Диван раскладывается, два посадочных места.",
+    "price_rub": 41400,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 160,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-moscow-sofa-02",
+    "category": "sofa",
+    "title": "Трёхместный диван",
+    "description": "Трёхместный диван, механизм раскладывания исправен.",
+    "price_rub": 71000,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 210,
+      "seats": 3,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-moscow-sofa-03",
+    "category": "sofa",
+    "title": "Прямой диван",
+    "description": "Прямой диван на два места, не раскладывается.",
+    "price_rub": 51800,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 180,
+      "seats": 2,
+      "sleeping_function": false
+    }
+  },
+  {
+    "id": "extension-moscow-bed-01",
+    "category": "bed",
+    "title": "Односпальная кровать",
+    "description": "Кровать шириной 90 см, без ящиков.",
+    "price_rub": 23700,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 90,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-moscow-bed-02",
+    "category": "bed",
+    "title": "Кровать с ящиками",
+    "description": "Двуспальная кровать, есть ящики для хранения.",
+    "price_rub": 50300,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 160,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-moscow-bed-03",
+    "category": "bed",
+    "title": "Кровать двуспальная",
+    "description": "Двуспальная кровать без встроенного хранения.",
+    "price_rub": 38500,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 140,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-moscow-wardrobe-01",
+    "category": "wardrobe",
+    "title": "Шкаф двухдверный",
+    "description": "Двухдверный шкаф для спальни.",
+    "price_rub": 25200,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 80,
+      "height_cm": 180,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-moscow-wardrobe-02",
+    "category": "wardrobe",
+    "title": "Шкаф для одежды",
+    "description": "Высокий шкаф с тремя дверями.",
+    "price_rub": 48800,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 120,
+      "height_cm": 210,
+      "door_count": 3
+    }
+  },
+  {
+    "id": "extension-moscow-wardrobe-03",
+    "category": "wardrobe",
+    "title": "Компактный шкаф",
+    "description": "Компактный шкаф, две двери.",
+    "price_rub": 34000,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 100,
+      "height_cm": 190,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-moscow-refrigerator-01",
+    "category": "refrigerator",
+    "title": "Компактный холодильник",
+    "description": "Холодильник объёмом 120 л, без No Frost.",
+    "price_rub": 31100,
+    "city_id": "moscow",
+    "attributes": {
+      "volume_l": 120,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-moscow-refrigerator-02",
+    "category": "refrigerator",
+    "title": "Холодильник No Frost",
+    "description": "Холодильник 250 л с системой No Frost.",
+    "price_rub": 72500,
+    "city_id": "moscow",
+    "attributes": {
+      "volume_l": 250,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-moscow-refrigerator-03",
+    "category": "refrigerator",
+    "title": "Холодильник для кухни",
+    "description": "Вместительный холодильник, объём 180 л.",
+    "price_rub": 51800,
+    "city_id": "moscow",
+    "attributes": {
+      "volume_l": 180,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-sofa-01",
+    "category": "sofa",
+    "title": "Диван-кровать компактный",
+    "description": "Диван раскладывается, два посадочных места.",
+    "price_rub": 37000,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 160,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-sofa-02",
+    "category": "sofa",
+    "title": "Трёхместный диван",
+    "description": "Трёхместный диван, механизм раскладывания исправен.",
+    "price_rub": 63400,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 210,
+      "seats": 3,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-sofa-03",
+    "category": "sofa",
+    "title": "Прямой диван",
+    "description": "Прямой диван на два места, не раскладывается.",
+    "price_rub": 46200,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 180,
+      "seats": 2,
+      "sleeping_function": false
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-bed-01",
+    "category": "bed",
+    "title": "Односпальная кровать",
+    "description": "Кровать шириной 90 см, без ящиков.",
+    "price_rub": 21100,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 90,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-bed-02",
+    "category": "bed",
+    "title": "Кровать с ящиками",
+    "description": "Двуспальная кровать, есть ящики для хранения.",
+    "price_rub": 44900,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 160,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-bed-03",
+    "category": "bed",
+    "title": "Кровать двуспальная",
+    "description": "Двуспальная кровать без встроенного хранения.",
+    "price_rub": 34300,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 140,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-wardrobe-01",
+    "category": "wardrobe",
+    "title": "Шкаф двухдверный",
+    "description": "Двухдверный шкаф для спальни.",
+    "price_rub": 22400,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 80,
+      "height_cm": 180,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-wardrobe-02",
+    "category": "wardrobe",
+    "title": "Шкаф для одежды",
+    "description": "Высокий шкаф с тремя дверями.",
+    "price_rub": 43600,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 120,
+      "height_cm": 210,
+      "door_count": 3
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-wardrobe-03",
+    "category": "wardrobe",
+    "title": "Компактный шкаф",
+    "description": "Компактный шкаф, две двери.",
+    "price_rub": 30400,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 100,
+      "height_cm": 190,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-refrigerator-01",
+    "category": "refrigerator",
+    "title": "Компактный холодильник",
+    "description": "Холодильник объёмом 120 л, без No Frost.",
+    "price_rub": 27700,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "volume_l": 120,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-refrigerator-02",
+    "category": "refrigerator",
+    "title": "Холодильник No Frost",
+    "description": "Холодильник 250 л с системой No Frost.",
+    "price_rub": 64700,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "volume_l": 250,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-refrigerator-03",
+    "category": "refrigerator",
+    "title": "Холодильник для кухни",
+    "description": "Вместительный холодильник, объём 180 л.",
+    "price_rub": 46200,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "volume_l": 180,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-kazan-sofa-01",
+    "category": "sofa",
+    "title": "Диван-кровать компактный",
+    "description": "Диван раскладывается, два посадочных места.",
+    "price_rub": 30200,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 160,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-kazan-sofa-02",
+    "category": "sofa",
+    "title": "Трёхместный диван",
+    "description": "Трёхместный диван, механизм раскладывания исправен.",
+    "price_rub": 51800,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 210,
+      "seats": 3,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-kazan-sofa-03",
+    "category": "sofa",
+    "title": "Прямой диван",
+    "description": "Прямой диван на два места, не раскладывается.",
+    "price_rub": 37800,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 180,
+      "seats": 2,
+      "sleeping_function": false
+    }
+  },
+  {
+    "id": "extension-kazan-bed-01",
+    "category": "bed",
+    "title": "Односпальная кровать",
+    "description": "Кровать шириной 90 см, без ящиков.",
+    "price_rub": 17300,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 90,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-kazan-bed-02",
+    "category": "bed",
+    "title": "Кровать с ящиками",
+    "description": "Двуспальная кровать, есть ящики для хранения.",
+    "price_rub": 36700,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 160,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-kazan-bed-03",
+    "category": "bed",
+    "title": "Кровать двуспальная",
+    "description": "Двуспальная кровать без встроенного хранения.",
+    "price_rub": 28100,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 140,
+      "has_storage": false
+    }
+  },
+  {
+    "id": "extension-kazan-wardrobe-01",
+    "category": "wardrobe",
+    "title": "Шкаф двухдверный",
+    "description": "Двухдверный шкаф для спальни.",
+    "price_rub": 18400,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 80,
+      "height_cm": 180,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-kazan-wardrobe-02",
+    "category": "wardrobe",
+    "title": "Шкаф для одежды",
+    "description": "Высокий шкаф с тремя дверями.",
+    "price_rub": 35600,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 120,
+      "height_cm": 210,
+      "door_count": 3
+    }
+  },
+  {
+    "id": "extension-kazan-wardrobe-03",
+    "category": "wardrobe",
+    "title": "Компактный шкаф",
+    "description": "Компактный шкаф, две двери.",
+    "price_rub": 24800,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 100,
+      "height_cm": 190,
+      "door_count": 2
+    }
+  },
+  {
+    "id": "extension-kazan-refrigerator-01",
+    "category": "refrigerator",
+    "title": "Компактный холодильник",
+    "description": "Холодильник объёмом 120 л, без No Frost.",
+    "price_rub": 22700,
+    "city_id": "kazan",
+    "attributes": {
+      "volume_l": 120,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-kazan-refrigerator-02",
+    "category": "refrigerator",
+    "title": "Холодильник No Frost",
+    "description": "Холодильник 250 л с системой No Frost.",
+    "price_rub": 52900,
+    "city_id": "kazan",
+    "attributes": {
+      "volume_l": 250,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-kazan-refrigerator-03",
+    "category": "refrigerator",
+    "title": "Холодильник для кухни",
+    "description": "Вместительный холодильник, объём 180 л.",
+    "price_rub": 37800,
+    "city_id": "kazan",
+    "attributes": {
+      "volume_l": 180,
+      "no_frost": false
+    }
+  },
+  {
+    "id": "extension-taganrog-sofa-04",
+    "category": "sofa",
+    "title": "Узкий диван-кровать",
+    "description": "Небольшой диван, раскладывается, ширина 145 см.",
+    "price_rub": 31500,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 145,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-taganrog-bed-04",
+    "category": "bed",
+    "title": "Широкая кровать с хранением",
+    "description": "Кровать шириной 180 см с местом для хранения.",
+    "price_rub": 42000,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 180,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-taganrog-wardrobe-04",
+    "category": "wardrobe",
+    "title": "Однодверный шкаф",
+    "description": "Узкий шкаф для небольшой комнаты.",
+    "price_rub": 12500,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 55,
+      "height_cm": 165,
+      "door_count": 1
+    }
+  },
+  {
+    "id": "extension-taganrog-refrigerator-04",
+    "category": "refrigerator",
+    "title": "Большой холодильник No Frost",
+    "description": "Вместительный холодильник с системой No Frost.",
+    "price_rub": 62000,
+    "city_id": "taganrog",
+    "attributes": {
+      "volume_l": 320,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-sofa-04",
+    "category": "sofa",
+    "title": "Узкий диван-кровать",
+    "description": "Небольшой диван, раскладывается, ширина 145 см.",
+    "price_rub": 35300,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 145,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-bed-04",
+    "category": "bed",
+    "title": "Широкая кровать с хранением",
+    "description": "Кровать шириной 180 см с местом для хранения.",
+    "price_rub": 47000,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 180,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-wardrobe-04",
+    "category": "wardrobe",
+    "title": "Однодверный шкаф",
+    "description": "Узкий шкаф для небольшой комнаты.",
+    "price_rub": 14000,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "width_cm": 55,
+      "height_cm": 165,
+      "door_count": 1
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-refrigerator-04",
+    "category": "refrigerator",
+    "title": "Большой холодильник No Frost",
+    "description": "Вместительный холодильник с системой No Frost.",
+    "price_rub": 69400,
+    "city_id": "rostov-na-donu",
+    "attributes": {
+      "volume_l": 320,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-azov-sofa-04",
+    "category": "sofa",
+    "title": "Узкий диван-кровать",
+    "description": "Небольшой диван, раскладывается, ширина 145 см.",
+    "price_rub": 29900,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 145,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-azov-bed-04",
+    "category": "bed",
+    "title": "Широкая кровать с хранением",
+    "description": "Кровать шириной 180 см с местом для хранения.",
+    "price_rub": 39900,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 180,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-azov-wardrobe-04",
+    "category": "wardrobe",
+    "title": "Однодверный шкаф",
+    "description": "Узкий шкаф для небольшой комнаты.",
+    "price_rub": 11900,
+    "city_id": "azov",
+    "attributes": {
+      "width_cm": 55,
+      "height_cm": 165,
+      "door_count": 1
+    }
+  },
+  {
+    "id": "extension-azov-refrigerator-04",
+    "category": "refrigerator",
+    "title": "Большой холодильник No Frost",
+    "description": "Вместительный холодильник с системой No Frost.",
+    "price_rub": 58900,
+    "city_id": "azov",
+    "attributes": {
+      "volume_l": 320,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-moscow-sofa-04",
+    "category": "sofa",
+    "title": "Узкий диван-кровать",
+    "description": "Небольшой диван, раскладывается, ширина 145 см.",
+    "price_rub": 46600,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 145,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-moscow-bed-04",
+    "category": "bed",
+    "title": "Широкая кровать с хранением",
+    "description": "Кровать шириной 180 см с местом для хранения.",
+    "price_rub": 62200,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 180,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-moscow-wardrobe-04",
+    "category": "wardrobe",
+    "title": "Однодверный шкаф",
+    "description": "Узкий шкаф для небольшой комнаты.",
+    "price_rub": 18500,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 55,
+      "height_cm": 165,
+      "door_count": 1
+    }
+  },
+  {
+    "id": "extension-moscow-refrigerator-04",
+    "category": "refrigerator",
+    "title": "Большой холодильник No Frost",
+    "description": "Вместительный холодильник с системой No Frost.",
+    "price_rub": 91800,
+    "city_id": "moscow",
+    "attributes": {
+      "volume_l": 320,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-sofa-04",
+    "category": "sofa",
+    "title": "Узкий диван-кровать",
+    "description": "Небольшой диван, раскладывается, ширина 145 см.",
+    "price_rub": 41600,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 145,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-bed-04",
+    "category": "bed",
+    "title": "Широкая кровать с хранением",
+    "description": "Кровать шириной 180 см с местом для хранения.",
+    "price_rub": 55400,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 180,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-wardrobe-04",
+    "category": "wardrobe",
+    "title": "Однодверный шкаф",
+    "description": "Узкий шкаф для небольшой комнаты.",
+    "price_rub": 16500,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "width_cm": 55,
+      "height_cm": 165,
+      "door_count": 1
+    }
+  },
+  {
+    "id": "extension-saint-petersburg-refrigerator-04",
+    "category": "refrigerator",
+    "title": "Большой холодильник No Frost",
+    "description": "Вместительный холодильник с системой No Frost.",
+    "price_rub": 81800,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "volume_l": 320,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-kazan-sofa-04",
+    "category": "sofa",
+    "title": "Узкий диван-кровать",
+    "description": "Небольшой диван, раскладывается, ширина 145 см.",
+    "price_rub": 34000,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 145,
+      "seats": 2,
+      "sleeping_function": true
+    }
+  },
+  {
+    "id": "extension-kazan-bed-04",
+    "category": "bed",
+    "title": "Широкая кровать с хранением",
+    "description": "Кровать шириной 180 см с местом для хранения.",
+    "price_rub": 45400,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 180,
+      "has_storage": true
+    }
+  },
+  {
+    "id": "extension-kazan-wardrobe-04",
+    "category": "wardrobe",
+    "title": "Однодверный шкаф",
+    "description": "Узкий шкаф для небольшой комнаты.",
+    "price_rub": 13500,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 55,
+      "height_cm": 165,
+      "door_count": 1
+    }
+  },
+  {
+    "id": "extension-kazan-refrigerator-04",
+    "category": "refrigerator",
+    "title": "Большой холодильник No Frost",
+    "description": "Вместительный холодильник с системой No Frost.",
+    "price_rub": 67000,
+    "city_id": "kazan",
+    "attributes": {
+      "volume_l": 320,
+      "no_frost": true
+    }
+  },
+  {
+    "id": "extension-taganrog-table-05",
+    "category": "table",
+    "title": "Стол с широкой столешницей",
+    "description": "Просторный письменный стол шириной 140 см.",
+    "price_rub": 7200,
+    "city_id": "taganrog",
+    "attributes": {
+      "width_cm": 140
+    }
+  },
+  {
+    "id": "extension-moscow-table-06",
+    "category": "table",
+    "title": "Компактный стол для ноутбука",
+    "description": "Небольшой стол шириной 60 см.",
+    "price_rub": 6700,
+    "city_id": "moscow",
+    "attributes": {
+      "width_cm": 60
+    }
+  },
+  {
+    "id": "extension-kazan-table-07",
+    "category": "table",
+    "title": "Стол после ремонта",
+    "description": "Стол в хорошем состоянии, ширина 110 см.",
+    "price_rub": 6000,
+    "city_id": "kazan",
+    "attributes": {
+      "width_cm": 110
+    }
+  },
+  {
+    "id": "extension-rostov-na-donu-chair-09",
+    "category": "chair",
+    "title": "Кресло с мягкой спинкой",
+    "description": "Кресло, регулировку высоты не проверяли.",
+    "price_rub": 3900,
+    "city_id": "rostov-na-donu",
+    "attributes": {}
+  },
+  {
+    "id": "extension-saint-petersburg-chair-10",
+    "category": "chair",
+    "title": "Кресло для рабочего места",
+    "description": "Высота кресла регулируется.",
+    "price_rub": 8200,
+    "city_id": "saint-petersburg",
+    "attributes": {
+      "adjustable_height": true
+    }
+  },
+  {
+    "id": "extension-azov-lamp-13",
+    "category": "lamp",
+    "title": "Лампа нейтрального света",
+    "description": "Настольная лампа, цветовая температура 4500 К.",
+    "price_rub": 1200,
+    "city_id": "azov",
+    "attributes": {
+      "color_temperature_k": 4500
+    }
+  },
+  {
+    "id": "extension-moscow-lamp-14",
+    "category": "lamp",
+    "title": "Настенный светильник",
+    "description": "Светильник, цветовая температура не указана.",
+    "price_rub": 2500,
+    "city_id": "moscow",
+    "attributes": {}
   }
 ]
