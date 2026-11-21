@@ -104,7 +104,7 @@ function answer(requirements, sourceCatalog = catalog) {
       : `В каком городе будете забирать товары: ${cityNames}?`;
     missing.push({ field: 'city_id', text: ask });
   }
-  if (requirements.budget_rub === null) missing.push({ field: 'budget_rub', text: 'Какой бюджет на весь комплект?' });
+  if (requirements.budget_rub === null) missing.push({ field: 'budget_rub', text: requirements.categories.length > 1 ? 'Какой бюджет рассматриваете на весь комплект?' : 'Какой бюджет рассматриваете на эту покупку?' });
   if (missing.length) return { status: 'clarify', questions: missing };
 
   const options = findOptions(requirements, sourceCatalog);
